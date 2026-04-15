@@ -1,0 +1,19 @@
+{
+  "name": "wenyanwen",
+  "version": "0.1.0",
+  "description": "文言文标记语言编译器 - 将 .wyw 文件编译为排版精美的 HTML 页面",
+  "type": "module",
+  "main": "./src/index.js",
+  "bin": {
+    "wyw": "./bin/wyw.js"
+  },
+  "scripts": {
+    "build:examples": "node bin/wyw.js build examples/*.wyw -o examples/dist",
+    "test": "node --test test/*.test.js"
+  },
+  "keywords": ["文言文", "classical-chinese", "markup", "typography"],
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^13.1.0"
+  }
+}

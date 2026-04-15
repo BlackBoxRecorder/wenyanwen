@@ -1,0 +1,483 @@
+/* ============================================================
+   wenyanwen (文言文) 样式表
+   参考赫蹏 (heti) 设计理念
+   ============================================================ */
+
+/* === CSS 变量 === */
+.wyw {
+  /* 字号 */
+  --wyw-font-size: 16px;
+  --wyw-font-size-large: 20px;
+  --wyw-font-size-small: 14px;
+  --wyw-font-size-xs: 12px;
+
+  /* 行高 */
+  --wyw-line-height: 1.8;
+  --wyw-line-height-dense: 1.5;
+  --wyw-line-height-loose: 2.4;
+
+  /* 间距 */
+  --wyw-letter-spacing: 0.05em;
+  --wyw-max-width: 42em;
+  --wyw-indent: 2em;
+  --wyw-grid-unit: calc(var(--wyw-font-size) * var(--wyw-line-height));
+
+  /* 字体 */
+  --wyw-font-song: "Noto Serif SC", "Source Han Serif SC", "Source Han Serif", "Songti SC", "SimSun", serif;
+  --wyw-font-kai: "KaiTi", "STKaiti", "AR PL UKai CN", "FangSong", serif;
+  --wyw-font-hei: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --wyw-font-pinyin: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* 颜色 - 浅色主题 */
+  --wyw-color-text: hsl(30, 10%, 12%);
+  --wyw-color-text-light: hsl(30, 5%, 40%);
+  --wyw-color-text-muted: hsl(30, 5%, 55%);
+  --wyw-color-bg: hsl(40, 40%, 97%);
+  --wyw-color-bg-alt: hsl(40, 30%, 94%);
+  --wyw-color-accent: hsl(0, 65%, 48%);
+  --wyw-color-border: hsl(30, 15%, 85%);
+  --wyw-color-tooltip-bg: hsl(30, 10%, 15%);
+  --wyw-color-tooltip-text: hsl(40, 30%, 95%);
+}
+
+/* === 深色主题 === */
+[data-theme="dark"] .wyw {
+  --wyw-color-text: hsl(40, 15%, 85%);
+  --wyw-color-text-light: hsl(40, 10%, 60%);
+  --wyw-color-text-muted: hsl(40, 5%, 48%);
+  --wyw-color-bg: hsl(30, 8%, 10%);
+  --wyw-color-bg-alt: hsl(30, 8%, 14%);
+  --wyw-color-accent: hsl(0, 50%, 60%);
+  --wyw-color-border: hsl(30, 5%, 25%);
+  --wyw-color-tooltip-bg: hsl(40, 20%, 88%);
+  --wyw-color-tooltip-text: hsl(30, 10%, 12%);
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-theme="auto"] .wyw {
+    --wyw-color-text: hsl(40, 15%, 85%);
+    --wyw-color-text-light: hsl(40, 10%, 60%);
+    --wyw-color-text-muted: hsl(40, 5%, 48%);
+    --wyw-color-bg: hsl(30, 8%, 10%);
+    --wyw-color-bg-alt: hsl(30, 8%, 14%);
+    --wyw-color-accent: hsl(0, 50%, 60%);
+    --wyw-color-border: hsl(30, 5%, 25%);
+    --wyw-color-tooltip-bg: hsl(40, 20%, 88%);
+    --wyw-color-tooltip-text: hsl(30, 10%, 12%);
+  }
+}
+
+/* === 全局 === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--wyw-color-bg);
+  transition: background-color 0.3s ease;
+}
+
+/* === 主容器 === */
+.wyw {
+  max-width: var(--wyw-max-width);
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+  font-family: var(--wyw-font-song);
+  font-size: var(--wyw-font-size);
+  line-height: var(--wyw-line-height);
+  letter-spacing: var(--wyw-letter-spacing);
+  color: var(--wyw-color-text);
+  text-align: justify;
+  overflow-wrap: break-word;
+  transition: color 0.3s ease;
+}
+
+/* 注音模式行高增大，避免 ruby 重叠 */
+.wyw--annotation .wyw-content p {
+  line-height: var(--wyw-line-height-loose);
+}
+
+/* === 文档头部 === */
+.wyw-header {
+  text-align: center;
+  margin-bottom: calc(var(--wyw-grid-unit) * 2);
+  padding-bottom: var(--wyw-grid-unit);
+  border-bottom: 1px solid var(--wyw-color-border);
+}
+
+.wyw-header h1 {
+  font-family: var(--wyw-font-kai);
+  font-size: 2em;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  margin: 0 0 0.5em;
+  color: var(--wyw-color-text);
+}
+
+.wyw-meta {
+  font-size: var(--wyw-font-size-small);
+  color: var(--wyw-color-text-light);
+  letter-spacing: 0.1em;
+}
+
+.wyw-meta .wyw-dynasty::after {
+  content: "\00B7";
+  margin: 0 0.3em;
+}
+
+.wyw-meta .wyw-author {
+  font-family: var(--wyw-font-kai);
+}
+
+/* === 正文区域 === */
+.wyw-content {
+  margin-top: var(--wyw-grid-unit);
+}
+
+/* === 标题 === */
+.wyw-content h2 {
+  font-family: var(--wyw-font-kai);
+  font-size: 1.5em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  margin: calc(var(--wyw-grid-unit) * 1.5) 0 var(--wyw-grid-unit);
+  color: var(--wyw-color-text);
+}
+
+.wyw-content h3 {
+  font-family: var(--wyw-font-kai);
+  font-size: 1.25em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin: var(--wyw-grid-unit) 0 calc(var(--wyw-grid-unit) * 0.5);
+  color: var(--wyw-color-text);
+}
+
+/* === 段落组 === */
+.wyw-para-group {
+  margin-bottom: calc(var(--wyw-grid-unit) * 0.8);
+}
+
+.wyw-para-group p:first-child {
+  text-indent: var(--wyw-indent);
+  margin: 0;
+}
+
+/* === 译文 === */
+.wyw-translation {
+  font-family: var(--wyw-font-hei);
+  font-size: var(--wyw-font-size-small);
+  color: var(--wyw-color-text-muted);
+  line-height: var(--wyw-line-height-dense);
+  margin: 0.4em 0 0;
+  padding: 0.4em 0 0.4em 1em;
+  border-left: 2px solid var(--wyw-color-border);
+  text-indent: 0;
+  letter-spacing: 0.02em;
+  /* 折叠动画 */
+  max-height: 200px;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.35s ease, margin 0.35s ease, padding 0.35s ease;
+}
+
+/* 隐藏译文状态 */
+.wyw--hide-translation .wyw-translation {
+  max-height: 0;
+  opacity: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-color: transparent;
+}
+
+/* === Ruby 注音 === */
+ruby {
+  ruby-align: center;
+}
+
+ruby rt {
+  font-family: var(--wyw-font-pinyin);
+  font-size: 0.5em;
+  color: var(--wyw-color-text-light);
+  letter-spacing: normal;
+  font-weight: normal;
+}
+
+ruby rp {
+  display: none;
+}
+
+/* === 词汇注释 (tooltip) === */
+.wyw-annotate {
+  position: relative;
+  cursor: help;
+  border-bottom: none;
+}
+
+/* 注释圆点指示器 */
+.wyw-annotate::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--wyw-color-accent);
+  pointer-events: none;
+}
+
+/* Tooltip 弹出框 */
+.wyw-annotate::before {
+  content: attr(data-note);
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--wyw-color-tooltip-bg);
+  color: var(--wyw-color-tooltip-text);
+  font-family: var(--wyw-font-hei);
+  font-size: var(--wyw-font-size-small);
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  padding: 6px 12px;
+  border-radius: 4px;
+  white-space: nowrap;
+  max-width: 20em;
+  z-index: 100;
+  pointer-events: none;
+  /* 隐藏与动画 */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  /* 三角箭头 */
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
+}
+
+.wyw-annotate:hover::before,
+.wyw-annotate:focus::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Tooltip 对齐调整 (JS 动态设置) */
+.wyw-annotate[data-tooltip-align="left"]::before {
+  left: 0;
+  transform: none;
+}
+
+.wyw-annotate[data-tooltip-align="right"]::before {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+/* === 着重号 === */
+em {
+  font-style: normal;
+  font-weight: inherit;
+  -webkit-text-emphasis: filled circle;
+  text-emphasis: filled circle;
+  -webkit-text-emphasis-position: under right;
+  text-emphasis-position: under right;
+  text-emphasis-color: var(--wyw-color-accent);
+  -webkit-text-emphasis-color: var(--wyw-color-accent);
+}
+
+/* === 专有名词 === */
+.wyw-proper {
+  border-bottom: 2px solid var(--wyw-color-text);
+  padding-bottom: 1px;
+}
+
+/* === 书名号 === */
+cite {
+  font-style: normal;
+}
+cite::before {
+  content: "\300A";
+}
+cite::after {
+  content: "\300B";
+}
+
+/* === 诗歌块 === */
+.wyw-poetry {
+  text-align: center;
+  margin: calc(var(--wyw-grid-unit) * 1.5) 0;
+  padding: var(--wyw-grid-unit) 0;
+  border-top: 1px solid var(--wyw-color-border);
+  border-bottom: 1px solid var(--wyw-color-border);
+}
+
+.wyw-poetry-title {
+  font-family: var(--wyw-font-kai);
+  font-size: 1.25em;
+  font-weight: 600;
+  margin: 0 0 0.3em;
+  letter-spacing: 0.1em;
+}
+
+.wyw-poetry-meta {
+  display: block;
+  font-size: 0.7em;
+  font-weight: normal;
+  color: var(--wyw-color-text-light);
+  margin-top: 0.2em;
+  letter-spacing: 0.05em;
+}
+
+.wyw-verse {
+  font-size: var(--wyw-font-size-large);
+  line-height: 2;
+  margin: 0.8em 0 0;
+  text-indent: 0;
+  letter-spacing: 0.08em;
+}
+
+/* === 引用 === */
+blockquote {
+  margin: var(--wyw-grid-unit) 0;
+  padding: 0.5em 0 0.5em 1.2em;
+  border-left: 3px solid var(--wyw-color-accent);
+  color: var(--wyw-color-text-light);
+}
+
+blockquote p {
+  margin: 0;
+  text-indent: 0;
+}
+
+/* === 分隔线 === */
+.wyw-hr {
+  border: none;
+  height: 1px;
+  background: var(--wyw-color-border);
+  margin: calc(var(--wyw-grid-unit) * 1.5) auto;
+  max-width: 6em;
+}
+
+/* === 工具栏 === */
+.wyw-toolbar {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 1000;
+}
+
+.wyw-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--wyw-color-border);
+  background: var(--wyw-color-bg);
+  color: var(--wyw-color-text);
+  font-family: var(--wyw-font-kai);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.wyw-btn:hover {
+  background: var(--wyw-color-bg-alt);
+  transform: scale(1.08);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+}
+
+.wyw-btn:active {
+  transform: scale(0.96);
+}
+
+/* 译文按钮激活状态 */
+.wyw-btn--translation[aria-pressed="true"] {
+  background: var(--wyw-color-accent);
+  color: white;
+  border-color: var(--wyw-color-accent);
+}
+
+/* === 响应式 === */
+@media (max-width: 768px) {
+  .wyw {
+    --wyw-font-size: 15px;
+    padding: 2rem 1rem 3rem;
+  }
+
+  .wyw-header h1 {
+    font-size: 1.6em;
+    letter-spacing: 0.1em;
+  }
+
+  .wyw-toolbar {
+    bottom: 1rem;
+    right: 1rem;
+  }
+
+  .wyw-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .wyw {
+    --wyw-font-size: 14px;
+    padding: 1.5rem 0.8rem 3rem;
+  }
+
+  .wyw-header h1 {
+    font-size: 1.4em;
+  }
+
+  .wyw-verse {
+    font-size: 17px;
+  }
+
+  /* 窄屏下 tooltip 不超出视口 */
+  .wyw-annotate::before {
+    white-space: normal;
+    max-width: 80vw;
+  }
+}
+
+/* === 打印样式 === */
+@media print {
+  .wyw-toolbar {
+    display: none;
+  }
+
+  .wyw {
+    max-width: none;
+    padding: 0;
+  }
+
+  .wyw-translation {
+    max-height: none;
+    opacity: 1;
+  }
+
+  .wyw-annotate::before {
+    display: none;
+  }
+}
