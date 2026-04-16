@@ -248,8 +248,8 @@ ruby rp {
   content: attr(data-note);
   position: absolute;
   bottom: calc(100% + 10px);
-  left: 0;
-  transform: translateX(-30%);
+  left: 50%;
+  transform: translateX(-50%);
   background: var(--wyw-color-tooltip-bg);
   color: var(--wyw-color-tooltip-text);
   font-family: var(--wyw-font-hei);
