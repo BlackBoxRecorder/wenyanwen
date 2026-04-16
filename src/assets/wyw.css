@@ -4,7 +4,7 @@
    ============================================================ */
 
 /* === CSS 变量 === */
-.wyw {
+:root {
   /* 字号 */
   --wyw-font-size: 16px;
   --wyw-font-size-large: 20px;
@@ -41,7 +41,7 @@
 }
 
 /* === 深色主题 === */
-[data-theme="dark"] .wyw {
+[data-theme="dark"] {
   --wyw-color-text: hsl(40, 15%, 85%);
   --wyw-color-text-light: hsl(40, 10%, 60%);
   --wyw-color-text-muted: hsl(40, 5%, 48%);
@@ -54,7 +54,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  [data-theme="auto"] .wyw {
+  [data-theme="auto"] {
     --wyw-color-text: hsl(40, 15%, 85%);
     --wyw-color-text-light: hsl(40, 10%, 60%);
     --wyw-color-text-muted: hsl(40, 5%, 48%);
