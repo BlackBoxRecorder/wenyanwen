@@ -14,6 +14,7 @@ const ASSETS_DIR = join(__dirname, '..', 'assets');
  * @param {Object} options.meta - 文档元数据
  * @param {string} options.body - 渲染后的 HTML body 内容
  * @param {boolean} [options.inline=false] - 是否内联 CSS/JS
+ * @param {string} [options.assetsPath=''] - CSS/JS 资源路径前缀
  * @param {string} [options.theme='auto'] - 默认主题
  * @param {boolean} [options.showTranslation=true] - 默认显示译文
  * @returns {string}
@@ -23,6 +24,7 @@ export function renderPage(options) {
     meta,
     body,
     inline = false,
+    assetsPath = '',
     theme = 'auto',
     showTranslation = true,
   } = options;
@@ -42,8 +44,8 @@ export function renderPage(options) {
     cssTag = `<style>\n${css}\n</style>`;
     jsTag = `<script>\n${js}\n</script>`;
   } else {
-    cssTag = '<link rel="stylesheet" href="wyw.css">';
-    jsTag = '<script src="wyw.js"></script>';
+    cssTag = `<link rel="stylesheet" href="${assetsPath}wyw.css">`;
+    jsTag = `<script src="${assetsPath}wyw.js"></script>`;
   }
 
   return `<!DOCTYPE html>

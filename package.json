@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build:examples": "node bin/wyw.js build examples/*.wyw -o examples/dist",
+    "build:site": "node web/build.js",
     "test": "node --test test/*.test.js"
   },
   "keywords": ["文言文", "classical-chinese", "markup", "typography"],

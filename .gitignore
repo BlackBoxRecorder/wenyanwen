@@ -9,6 +9,7 @@ yarn.lock
 # Build outputs
 examples/dist/
 examples/dist-inline/
+dist/
 *.html
 !examples/dist-inline/.gitkeep
 

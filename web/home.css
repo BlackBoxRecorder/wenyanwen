@@ -1,0 +1,109 @@
+/* 首页样式 — 文言诗词词云 */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--wyw-color-bg);
+  color: var(--wyw-color-text);
+  font-family: var(--wyw-font-song);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.wyw-home {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+}
+
+/* 词云容器 */
+.wyw-cloud {
+  position: relative;
+  width: 90vw;
+  max-width: 900px;
+  height: 80vh;
+  max-height: 700px;
+  margin: 0 auto;
+}
+
+/* 中心标题 */
+.wyw-cloud-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--wyw-font-song);
+  font-size: clamp(2.4em, 5vw, 3.6em);
+  font-weight: 700;
+  color: var(--wyw-color-accent);
+  letter-spacing: 0.3em;
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* 词云项目 */
+.wyw-cloud-item {
+  position: absolute;
+  font-family: var(--wyw-font-kai);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.25s ease, color 0.25s ease, text-shadow 0.25s ease;
+  transform-origin: center center;
+  z-index: 1;
+}
+
+.wyw-cloud-item:hover {
+  transform: scale(1.15);
+  color: var(--wyw-color-accent) !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 20;
+}
+
+/* 页脚 */
+.wyw-home-footer {
+  margin-top: 2rem;
+  padding: 1.5rem 0;
+  text-align: center;
+  color: var(--wyw-color-text-muted);
+  font-family: var(--wyw-font-kai);
+  font-size: var(--wyw-font-size-small);
+  letter-spacing: 0.2em;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .wyw-cloud {
+    width: 95vw;
+    height: 70vh;
+  }
+
+  .wyw-cloud-center {
+    font-size: clamp(1.8em, 6vw, 2.6em);
+  }
+}
+
+@media (max-width: 480px) {
+  .wyw-home {
+    padding: 1rem;
+  }
+
+  .wyw-cloud {
+    height: 65vh;
+  }
+
+  .wyw-cloud-center {
+    font-size: 1.6em;
+    letter-spacing: 0.2em;
+  }
+}

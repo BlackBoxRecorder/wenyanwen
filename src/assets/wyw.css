@@ -484,3 +484,22 @@ blockquote p {
     display: none;
   }
 }
+
+/* === 站点导航 === */
+
+.wyw-nav {
+  margin-bottom: 1.5rem;
+}
+
+.wyw-back {
+  display: inline-block;
+  font-family: var(--wyw-font-kai);
+  font-size: var(--wyw-font-size-small);
+  color: var(--wyw-color-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.wyw-back:hover {
+  color: var(--wyw-color-accent);
+}
