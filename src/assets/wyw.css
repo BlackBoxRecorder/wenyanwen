@@ -225,18 +225,22 @@ ruby rp {
   border-bottom: none;
 }
 
-/* 注释圆点指示器 */
+/* 注释下划线指示器 - 悬停时显示 */
 .wyw-annotate::after {
   content: "";
   position: absolute;
-  bottom: -4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
   background-color: var(--wyw-color-accent);
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.wyw-annotate:hover::after {
+  opacity: 1;
 }
 
 /* Tooltip 弹出框 */
@@ -287,13 +291,8 @@ ruby rp {
 /* === 着重号 === */
 em {
   font-style: normal;
-  font-weight: inherit;
-  -webkit-text-emphasis: filled circle;
-  text-emphasis: filled circle;
-  -webkit-text-emphasis-position: under right;
-  text-emphasis-position: under right;
-  text-emphasis-color: var(--wyw-color-accent);
-  -webkit-text-emphasis-color: var(--wyw-color-accent);
+  font-weight: 700;
+  font-family: var(--wyw-font-hei);
 }
 
 /* === 专有名词 === */
