@@ -77,6 +77,8 @@ function renderBlock(block) {
       return `<blockquote><p>${renderInlineList(block.children)}</p></blockquote>`;
     case 'section_break':
       return '<hr class="wyw-hr">';
+    case 'proofread_date':
+      return `<footer class="wyw-proofread">校对于：${escapeHtml(block.date)}</footer>`;
     default:
       return '';
   }

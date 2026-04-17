@@ -34,6 +34,10 @@ export function createSectionBreak() {
   return { type: 'section_break' };
 }
 
+export function createProofreadDate(date) {
+  return { type: 'proofread_date', date };
+}
+
 // === Inline 节点 ===
 
 export function createText(value) {

@@ -10,6 +10,7 @@ import {
   createBlockquote,
   createSectionBreak,
   createDocument,
+  createProofreadDate,
 } from './ast.js';
 import { parseInline } from './inline-parser.js';
 import { parseFrontmatter } from './frontmatter.js';
@@ -91,6 +92,13 @@ function parseBlocks(lines) {
         // 主题分隔线: ---
         if (/^-{3,}$/.test(trimmed)) {
           blocks.push(createSectionBreak());
+          continue;
+        }
+
+        // 校对日期标记: --YYYY 年 M 月 D 日--
+        const dateMatch = trimmed.match(/^--(\d{4} 年 \d{1,2} 月 \d{1,2} 日)--$/);
+        if (dateMatch) {
+          blocks.push(createProofreadDate(dateMatch[1]));
           continue;
         }
 
