@@ -146,8 +146,12 @@ function renderInline(node) {
     case 'ruby_annotate':
       return `<ruby><span class="wyw-annotate" data-note="${escapeAttr(node.note)}">${escapeHtml(node.base)}</span><rp>(</rp><rt>${escapeHtml(node.annotation)}</rt><rp>)</rp></ruby>`;
 
-    case 'ruby_annotate_full':
-      return `<ruby><span class="wyw-annotate" data-note="${escapeAttr(node.note)}">${escapeHtml(node.fullText)}</span><rp>(</rp><rt>${escapeHtml(node.annotation)}</rt><rp>)</rp></ruby>`;
+    case 'ruby_annotate_full': {
+      // 将 fullText 拆分为 base 和剩余部分
+      // 例如 fullText="箬笠", base="箬" -> suffix="笠"
+      const suffix = node.fullText.slice(node.base.length);
+      return `<ruby><span class="wyw-annotate" data-note="${escapeAttr(node.note)}"><ruby>${escapeHtml(node.base)}<rp>(</rp><rt>${escapeHtml(node.annotation)}</rt><rp>)</rp></ruby>${escapeHtml(suffix)}</span></ruby>`;
+    }
 
     case 'emphasis':
       return `<em>${renderInlineList(node.children)}</em>`;
