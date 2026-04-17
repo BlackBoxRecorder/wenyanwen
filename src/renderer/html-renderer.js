@@ -138,6 +138,9 @@ function renderInline(node) {
     case 'annotate':
       return `<span class="wyw-annotate" data-note="${escapeAttr(node.note)}">${escapeHtml(node.text)}</span>`;
 
+    case 'ruby_annotate':
+      return `<ruby><span class="wyw-annotate" data-note="${escapeAttr(node.note)}">${escapeHtml(node.base)}</span><rp>(</rp><rt>${escapeHtml(node.annotation)}</rt><rp>)</rp></ruby>`;
+
     case 'emphasis':
       return `<em>${renderInlineList(node.children)}</em>`;
 

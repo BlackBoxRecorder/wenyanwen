@@ -59,3 +59,12 @@ export function createProperNoun(children) {
 export function createBookTitle(title) {
   return { type: 'book_title', title };
 }
+
+export function createRubyAnnotate(base, annotation, note) {
+  return {
+    type: 'ruby_annotate',
+    base,
+    annotation,
+    note,
+  };
+}
