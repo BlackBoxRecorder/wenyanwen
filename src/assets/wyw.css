@@ -320,15 +320,23 @@ cite::after {
 .wyw-poetry {
   text-align: center;
   margin: calc(var(--wyw-grid-unit) * 2) 0;
-  padding: var(--wyw-grid-unit) 0;
+  padding: 0 0 var(--wyw-grid-unit);
+  border-bottom: 1px solid var(--wyw-color-border);
 }
 
 .wyw-poetry-title {
   font-family: var(--wyw-font-kai);
-  font-size: 1.25em;
-  font-weight: 600;
-  margin: 0 0 0.3em;
+  font-size: 2em;
+  font-weight: 700;
+  margin: 0 0 0.5em;
+  letter-spacing: 0.15em;
+}
+
+.wyw-poetry .wyw-meta {
+  font-size: var(--wyw-font-size-small);
+  color: var(--wyw-color-text-light);
   letter-spacing: 0.1em;
+  margin: 0 0 0.5em;
 }
 
 .wyw-poetry-meta {

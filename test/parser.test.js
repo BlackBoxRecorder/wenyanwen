@@ -186,7 +186,8 @@ author: 作者
 
     const doc = parse(source);
     assert.equal(doc.children[0].type, 'poetry_block');
-    assert.equal(doc.children[0].title, '赠汪伦');
+    // title 是 parseInline 返回的内联节点数组
+    assert.deepEqual(doc.children[0].title, [{ type: 'text', value: '赠汪伦' }]);
     assert.equal(doc.children[0].meta, '[唐]李白');
     assert.ok(doc.children[0].lines.length > 0);
   });

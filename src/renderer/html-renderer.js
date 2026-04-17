@@ -108,11 +108,11 @@ function renderPoetryBlock(block) {
   const lines = ['<div class="wyw-poetry">'];
 
   if (block.title) {
-    lines.push(`  <h3 class="wyw-poetry-title">${renderInlineList(block.title)}`);
-    if (block.meta) {
-      lines.push(`    <span class="wyw-poetry-meta">${escapeHtml(block.meta)}</span>`);
-    }
-    lines.push('  </h3>');
+    lines.push(`  <h1 class="wyw-poetry-title">${renderInlineList(block.title)}</h1>`);
+  }
+
+  if (block.meta) {
+    lines.push(`  <p class="wyw-meta">${escapeHtml(block.meta)}</p>`);
   }
 
   lines.push('  <p class="wyw-verse">');
