@@ -9,8 +9,13 @@
 export function renderBody(doc) {
   const parts = [];
 
-  // 渲染文档头部
-  if (doc.meta.title || doc.meta.author) {
+  // 检查文档是否包含带标题的诗词块
+  const hasPoetryWithTitle = doc.children.some(
+    block => block.type === 'poetry_block' && block.title
+  );
+
+  // 渲染文档头部（如果文档不包含带标题的诗词块）
+  if (!hasPoetryWithTitle && (doc.meta.title || doc.meta.author)) {
     parts.push(renderHeader(doc.meta));
   }
 
@@ -101,7 +106,7 @@ function renderPoetryBlock(block) {
   const lines = ['<div class="wyw-poetry">'];
 
   if (block.title) {
-    lines.push(`  <h3 class="wyw-poetry-title">${escapeHtml(block.title)}`);
+    lines.push(`  <h3 class="wyw-poetry-title">${renderInlineList(block.title)}`);
     if (block.meta) {
       lines.push(`    <span class="wyw-poetry-meta">${escapeHtml(block.meta)}</span>`);
     }
@@ -140,6 +145,9 @@ function renderInline(node) {
 
     case 'ruby_annotate':
       return `<ruby><span class="wyw-annotate" data-note="${escapeAttr(node.note)}">${escapeHtml(node.base)}</span><rp>(</rp><rt>${escapeHtml(node.annotation)}</rt><rp>)</rp></ruby>`;
+
+    case 'ruby_annotate_full':
+      return `<ruby><span class="wyw-annotate" data-note="${escapeAttr(node.note)}">${escapeHtml(node.fullText)}</span><rp>(</rp><rt>${escapeHtml(node.annotation)}</rt><rp>)</rp></ruby>`;
 
     case 'emphasis':
       return `<em>${renderInlineList(node.children)}</em>`;

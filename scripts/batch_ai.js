@@ -21,6 +21,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const PROJECT_ROOT = join(__dirname, '..');
 
+// 并发控制限制
+const CONCURRENCY_LIMIT = 10;
+
 /**
  * 解析命令行参数
  */
@@ -129,6 +132,104 @@ function callAiJs(title, author, type, options) {
 }
 
 /**
+ * 处理单个任务
+ * @param {Object} record 任务记录
+ * @param {number} index 任务索引
+ * @param {number} total 总任务数
+ * @param {Object} options 配置选项
+ * @param {Object} stats 统计对象
+ */
+async function processTask(record, index, total, options, stats) {
+  const { author, title, type, typeCN } = record;
+  const { output } = options;
+  const progress = `[${index + 1}/${total}]`;
+
+  // 检查文件是否已存在
+  const subDir = TYPE_TO_DIR[type];
+  const fileName = generateFileName(title, author);
+  const filePath = join(output, subDir, fileName);
+
+  if (await fileExists(filePath)) {
+    console.log(`${progress} 跳过（已存在）: ${title} - ${author}`);
+    stats.skipCount++;
+    return;
+  }
+
+  console.log(`${progress} 正在生成: ${title} - ${author} (${typeCN})`);
+
+  // 调用 ai.js 进行生成
+  const result = await callAiJs(title, author, type, { output });
+
+  if (result.success) {
+    console.log(`${progress} 成功: ${title} - ${author}`);
+    stats.successCount++;
+  } else {
+    console.error(`${progress} 失败: ${title} - ${author} - ${result.error}`);
+    stats.failCount++;
+    stats.failedRecords.push({ author, title, typeCN, error: result.error });
+  }
+}
+
+/**
+ * 并发调度器
+ * @param {Array} records 任务记录列表
+ * @param {Object} options 配置选项
+ */
+async function runWithConcurrency(records, options) {
+  const total = records.length;
+  
+  // 统计对象（在并发中安全更新）
+  const stats = {
+    successCount: 0,
+    skipCount: 0,
+    failCount: 0,
+    failedRecords: [],
+  };
+
+  // 任务队列
+  let currentIndex = 0;
+  const runningTasks = new Map();
+
+  // 获取下一个任务
+  const getNextTask = () => {
+    if (currentIndex >= total) return null;
+    const record = records[currentIndex];
+    const index = currentIndex;
+    currentIndex++;
+    return { record, index };
+  };
+
+  // 启动新任务
+  const startTask = async () => {
+    const task = getNextTask();
+    if (!task) return;
+
+    const { record, index } = task;
+    const taskPromise = processTask(record, index, total, options, stats)
+      .finally(() => {
+        runningTasks.delete(index);
+      });
+    
+    runningTasks.set(index, taskPromise);
+  };
+
+  // 主循环：保持最多 CONCURRENCY_LIMIT 个并发任务
+  while (currentIndex < total || runningTasks.size > 0) {
+    // 填充空闲槽位，直到达到并发限制
+    while (runningTasks.size < CONCURRENCY_LIMIT && currentIndex < total) {
+      startTask();
+    }
+
+    // 等待任意一个任务完成
+    if (runningTasks.size > 0) {
+      await Promise.race(runningTasks.values());
+    }
+  }
+
+  return stats;
+}
+
+/**
  * 主入口
  */
 async function main() {
@@ -148,60 +249,25 @@ async function main() {
     // 解析 CSV
     console.log(`读取 CSV 文件: ${input}`);
     const records = await parseCSV(input);
-    console.log(`共发现 ${records.length} 条记录\n`);
+    console.log(`共发现 ${records.length} 条记录`);
+    console.log(`并发限制: ${CONCURRENCY_LIMIT}\n`);
 
-    // 统计
-    let successCount = 0;
-    let skipCount = 0;
-    let failCount = 0;
-    const failedRecords = [];
-
-    // 逐个处理
-    for (let i = 0; i < records.length; i++) {
-      const { author, title, type, typeCN } = records[i];
-      const progress = `[${i + 1}/${records.length}]`;
-
-      // 检查文件是否已存在
-      const subDir = TYPE_TO_DIR[type];
-      const fileName = generateFileName(title, author);
-      const filePath = join(output, subDir, fileName);
-
-      if (await fileExists(filePath)) {
-        console.log(`${progress} 跳过（已存在）: ${title} - ${author}`);
-        skipCount++;
-        continue;
-      }
-
-      console.log(`${progress} 正在生成: ${title} - ${author} (${typeCN})`);
-
-      // 调用 ai.js 进行生成
-      const result = await callAiJs(title, author, type, {
-        output,
-      });
-
-      if (result.success) {
-        console.log(`      成功`);
-        successCount++;
-      } else {
-        console.error(`      失败: ${result.error}`);
-        failCount++;
-        failedRecords.push({ author, title, typeCN, error: result.error });
-      }
-    }
+    // 并发执行所有任务
+    const stats = await runWithConcurrency(records, options);
 
     // 输出统计
     console.log('\n========================================');
     console.log('  生成完成');
     console.log('========================================');
-    console.log(`  成功: ${successCount}`);
-    console.log(`  跳过: ${skipCount}`);
-    console.log(`  失败: ${failCount}`);
+    console.log(`  成功: ${stats.successCount}`);
+    console.log(`  跳过: ${stats.skipCount}`);
+    console.log(`  失败: ${stats.failCount}`);
     console.log('========================================\n');
 
     // 输出失败列表
-    if (failedRecords.length > 0) {
+    if (stats.failedRecords.length > 0) {
       console.log('失败列表:');
-      failedRecords.forEach((r, i) => {
+      stats.failedRecords.forEach((r, i) => {
         console.log(`  ${i + 1}. ${r.title} - ${r.author} (${r.typeCN})`);
         console.log(`     错误: ${r.error}`);
       });

@@ -9,10 +9,16 @@ import {
   createProperNoun,
   createBookTitle,
   createRubyAnnotate,
+  createRubyAnnotateFull,
 } from './ast.js';
 
 // 内联语法的正则模式（按匹配优先级排列）
 const PATTERNS = [
+  // 注音+注释整词组合: {字|pīn yīn|整词}(释义)
+  {
+    regex: /\{([^|{}]+)\|([^|{}]+)\|([^}]+)\}\(([^)]+)\)/,
+    create: (match) => createRubyAnnotateFull(match[1], match[2], match[3], match[4]),
+  },
   // 注音+注释组合: {字|pīn yīn}[字](释义)
   {
     regex: /\{([^|{}]+)\|([^}]+)\}\[\1\]\(([^)]+)\)/,

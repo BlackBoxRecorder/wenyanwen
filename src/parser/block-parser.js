@@ -182,7 +182,7 @@ function parseBlocks(lines) {
         // 围栏内的标题 # text
         const fencedHeadingMatch = trimmed.match(/^(#{1,3})\s+(.+)$/);
         if (fencedHeadingMatch && buffer.length === 0 && !fencedTitle) {
-          fencedTitle = fencedHeadingMatch[2];
+          fencedTitle = parseInline(fencedHeadingMatch[2]);
           continue;
         }
 

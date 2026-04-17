@@ -319,10 +319,8 @@ cite::after {
 /* === 诗歌块 === */
 .wyw-poetry {
   text-align: center;
-  margin: calc(var(--wyw-grid-unit) * 1.5) 0;
+  margin: calc(var(--wyw-grid-unit) * 2) 0;
   padding: var(--wyw-grid-unit) 0;
-  border-top: 1px solid var(--wyw-color-border);
-  border-bottom: 1px solid var(--wyw-color-border);
 }
 
 .wyw-poetry-title {

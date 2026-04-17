@@ -68,3 +68,13 @@ export function createRubyAnnotate(base, annotation, note) {
     note,
   };
 }
+
+export function createRubyAnnotateFull(base, annotation, fullText, note) {
+  return {
+    type: 'ruby_annotate_full',
+    base,
+    annotation,
+    fullText,
+    note,
+  };
+}
