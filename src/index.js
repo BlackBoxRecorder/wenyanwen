@@ -9,6 +9,7 @@ import { renderPage } from './renderer/page-template.js';
  * @param {string} source - .wyw 文件内容
  * @param {Object} [options]
  * @param {boolean} [options.inline=false] - 内联 CSS/JS
+ * @param {string} [options.assetsPath=''] - CSS/JS 资源路径前缀
  * @param {string} [options.theme='auto'] - 默认主题
  * @param {boolean} [options.showTranslation=true] - 默认显示译文
  * @returns {string} - 完整 HTML 页面
@@ -20,6 +21,7 @@ export function compile(source, options = {}) {
     meta: doc.meta,
     body,
     inline: options.inline || false,
+    assetsPath: options.assetsPath || '',
     theme: options.theme || 'auto',
     showTranslation: options.showTranslation !== false,
   });

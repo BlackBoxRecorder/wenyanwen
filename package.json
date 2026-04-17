@@ -9,11 +9,18 @@
   },
   "scripts": {
     "build:examples": "node bin/wyw.js build examples/*.wyw -o examples/dist",
+    "build:site": "node web/build.js",
     "test": "node --test test/*.test.js"
   },
-  "keywords": ["文言文", "classical-chinese", "markup", "typography"],
+  "keywords": [
+    "文言文",
+    "classical-chinese",
+    "markup",
+    "typography"
+  ],
   "license": "MIT",
   "dependencies": {
-    "commander": "^13.1.0"
+    "commander": "^13.1.0",
+    "handlebars": "^4.7.9"
   }
 }

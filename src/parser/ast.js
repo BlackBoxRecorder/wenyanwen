@@ -34,6 +34,10 @@ export function createSectionBreak() {
   return { type: 'section_break' };
 }
 
+export function createProofreadDate(date) {
+  return { type: 'proofread_date', date };
+}
+
 // === Inline 节点 ===
 
 export function createText(value) {
@@ -58,4 +62,23 @@ export function createProperNoun(children) {
 
 export function createBookTitle(title) {
   return { type: 'book_title', title };
+}
+
+export function createRubyAnnotate(base, annotation, note) {
+  return {
+    type: 'ruby_annotate',
+    base,
+    annotation,
+    note,
+  };
+}
+
+export function createRubyAnnotateFull(base, annotation, fullText, note) {
+  return {
+    type: 'ruby_annotate_full',
+    base,
+    annotation,
+    fullText,
+    note,
+  };
 }

@@ -319,18 +319,22 @@ cite::after {
 /* === 诗歌块 === */
 .wyw-poetry {
   text-align: center;
-  margin: calc(var(--wyw-grid-unit) * 1.5) 0;
-  padding: var(--wyw-grid-unit) 0;
-  border-top: 1px solid var(--wyw-color-border);
-  border-bottom: 1px solid var(--wyw-color-border);
+  margin: calc(var(--wyw-grid-unit) * 2) 0;
 }
 
 .wyw-poetry-title {
   font-family: var(--wyw-font-kai);
-  font-size: 1.25em;
-  font-weight: 600;
-  margin: 0 0 0.3em;
+  font-size: 2em;
+  font-weight: 700;
+  margin: 0 0 0.5em;
+  letter-spacing: 0.15em;
+}
+
+.wyw-poetry .wyw-meta {
+  font-size: var(--wyw-font-size-small);
+  color: var(--wyw-color-text-light);
   letter-spacing: 0.1em;
+  margin: 0 0 0.5em;
 }
 
 .wyw-poetry-meta {
@@ -348,6 +352,8 @@ cite::after {
   margin: 0.8em 0 0;
   text-indent: 0;
   letter-spacing: 0.08em;
+  padding-top: var(--wyw-grid-unit);
+  border-top: 1px solid var(--wyw-color-border);
 }
 
 /* === 引用 === */
@@ -483,4 +489,32 @@ blockquote p {
   .wyw-annotate::before {
     display: none;
   }
+}
+
+/* === 站点导航 === */
+
+.wyw-nav {
+  margin-bottom: 1.5rem;
+}
+
+.wyw-back {
+  display: inline-block;
+  font-family: var(--wyw-font-kai);
+  font-size: var(--wyw-font-size-small);
+  color: var(--wyw-color-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.wyw-back:hover {
+  color: var(--wyw-color-accent);
+}
+
+/* === 校对日期 === */
+.wyw-proofread {
+  text-align: right;
+  font-size: var(--wyw-font-size-xs);
+  color: var(--wyw-color-text-muted);
+  margin-top: calc(var(--wyw-grid-unit) * 2);
+  letter-spacing: 0.02em;
 }

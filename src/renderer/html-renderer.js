@@ -9,8 +9,13 @@
 export function renderBody(doc) {
   const parts = [];
 
-  // 渲染文档头部
-  if (doc.meta.title || doc.meta.author) {
+  // 检查文档是否包含带标题的诗词块
+  const hasPoetryWithTitle = doc.children.some(
+    block => block.type === 'poetry_block' && block.title
+  );
+
+  // 渲染文档头部（如果文档不包含带标题的诗词块）
+  if (!hasPoetryWithTitle && (doc.meta.title || doc.meta.author)) {
     parts.push(renderHeader(doc.meta));
   }
 
@@ -72,6 +77,8 @@ function renderBlock(block) {
       return `<blockquote><p>${renderInlineList(block.children)}</p></blockquote>`;
     case 'section_break':
       return '<hr class="wyw-hr">';
+    case 'proofread_date':
+      return `<footer class="wyw-proofread">校对于：${escapeHtml(block.date)}</footer>`;
     default:
       return '';
   }
@@ -101,11 +108,11 @@ function renderPoetryBlock(block) {
   const lines = ['<div class="wyw-poetry">'];
 
   if (block.title) {
-    lines.push(`  <h3 class="wyw-poetry-title">${escapeHtml(block.title)}`);
-    if (block.meta) {
-      lines.push(`    <span class="wyw-poetry-meta">${escapeHtml(block.meta)}</span>`);
-    }
-    lines.push('  </h3>');
+    lines.push(`  <h1 class="wyw-poetry-title">${renderInlineList(block.title)}</h1>`);
+  }
+
+  if (block.meta) {
+    lines.push(`  <p class="wyw-meta">${escapeHtml(block.meta)}</p>`);
   }
 
   lines.push('  <p class="wyw-verse">');
@@ -137,6 +144,16 @@ function renderInline(node) {
 
     case 'annotate':
       return `<span class="wyw-annotate" data-note="${escapeAttr(node.note)}">${escapeHtml(node.text)}</span>`;
+
+    case 'ruby_annotate':
+      return `<ruby><span class="wyw-annotate" data-note="${escapeAttr(node.note)}">${escapeHtml(node.base)}</span><rp>(</rp><rt>${escapeHtml(node.annotation)}</rt><rp>)</rp></ruby>`;
+
+    case 'ruby_annotate_full': {
+      // 将 fullText 拆分为 base 和剩余部分
+      // 例如 fullText="箬笠", base="箬" -> suffix="笠"
+      const suffix = node.fullText.slice(node.base.length);
+      return `<ruby><span class="wyw-annotate" data-note="${escapeAttr(node.note)}"><ruby>${escapeHtml(node.base)}<rp>(</rp><rt>${escapeHtml(node.annotation)}</rt><rp>)</rp></ruby>${escapeHtml(suffix)}</span></ruby>`;
+    }
 
     case 'emphasis':
       return `<em>${renderInlineList(node.children)}</em>`;
