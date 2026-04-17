@@ -17,7 +17,7 @@ const COLORS = [
 /**
  * 字号档位（em 单位）
  */
-const FONT_SIZES = [2.2, 1.8, 1.5, 1.3, 1.1];
+const FONT_SIZES = [1.9, 1.6, 1.35, 1.15, 0.95, 0.82, 0.72, 0.64, 0.56, 0.5, 0.45, 0.4];
 
 /**
  * 简易伪随机数生成器（确保构建结果确定性）
@@ -51,7 +51,7 @@ function estimateBBox(text, fontSize, containerW, containerH, rotation) {
 /**
  * 检查两个矩形是否重叠（带间距）
  */
-function overlaps(a, b, padding = 6) {
+function overlaps(a, b, padding = 1) {
   return !(
     a.x + a.w / 2 + padding < b.x - b.w / 2 ||
     a.x - a.w / 2 - padding > b.x + b.w / 2 ||
@@ -66,9 +66,9 @@ function overlaps(a, b, padding = 6) {
  * @returns {Array} - [{ title, href, top, left, fontSize, color, rotation, tooltip }]
  */
 export function computeWordCloudLayout(manifest) {
-  const MAX_ITEMS = 40;
-  const containerW = 900;
-  const containerH = 700;
+  const MAX_ITEMS = 100;
+  const containerW = 1200;
+  const containerH = 900;
   const centerX = containerW / 2;
   const centerY = containerH / 2;
 
@@ -85,8 +85,8 @@ export function computeWordCloudLayout(manifest) {
   items.forEach((item, i) => {
     item._fontSize = FONT_SIZES[i % FONT_SIZES.length];
     item._color = COLORS[i % COLORS.length];
-    // 少量标题加旋转（约 15%）
-    item._rotation = rand() < 0.15 ? (rand() < 0.5 ? 90 : -90) : 0;
+    // 所有文字统一横排，不旋转
+    item._rotation = 0;
   });
 
   // 按字号从大到小排序（大的优先放置）
@@ -95,7 +95,7 @@ export function computeWordCloudLayout(manifest) {
   // 先放置中心标题 "文言诗词" 的占位
   const centerTitle = '文言诗词';
   const centerBBox = estimateBBox(centerTitle, 3.6, containerW, containerH, 0);
-  const placed = [{ x: centerX, y: centerY, w: centerBBox.w * 1.3, h: centerBBox.h * 1.3 }];
+  const placed = [{ x: centerX, y: centerY, w: centerBBox.w, h: centerBBox.h }];
 
   const result = [];
 
@@ -104,20 +104,20 @@ export function computeWordCloudLayout(manifest) {
 
     let bestPos = null;
     // 阿基米德螺旋搜索
-    const spiralStep = 0.5;
-    const angleStep = 0.3;
-    for (let t = 0; t < 360; t += spiralStep) {
+    const spiralStep = 0.03;
+    const angleStep = 0.03;
+    for (let t = 0; t < 100000; t += spiralStep) {
       const angle = t * angleStep;
-      const radius = 8 + t * 1.2;
+      const radius = 0.5 + t * 0.18;
       const x = centerX + radius * Math.cos(angle);
       const y = centerY + radius * Math.sin(angle) * 0.75; // 椭圆化，横向稍宽
 
-      // 检查是否在容器内
+      // 检查是否在容器内（放宽边界）
       if (
-        x - bbox.w / 2 < 10 ||
-        x + bbox.w / 2 > containerW - 10 ||
-        y - bbox.h / 2 < 10 ||
-        y + bbox.h / 2 > containerH - 10
+        x - bbox.w / 2 < 0 ||
+        x + bbox.w / 2 > containerW ||
+        y - bbox.h / 2 < 0 ||
+        y + bbox.h / 2 > containerH
       ) {
         continue;
       }
