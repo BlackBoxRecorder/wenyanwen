@@ -104,7 +104,7 @@ function build() {
 
   // 5. 生成首页
   const layoutItems = computeWordCloudLayout(manifest);
-  const homepageHtml = renderHomepage(layoutItems);
+  const homepageHtml = renderHomepage(layoutItems, manifest);
   writeFileSync(join(DIST, 'index.html'), homepageHtml, 'utf-8');
   console.log(`  index.html  (首页词云, ${layoutItems.length} 个标题)`);
 
