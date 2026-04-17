@@ -1,5 +1,7 @@
 // 首页生成模块 — 词云布局 + HTML 模板
 
+import { loadTemplate } from '../src/templates/index.js';
+
 /**
  * 传统中式配色方案
  */
@@ -166,52 +168,12 @@ export function computeWordCloudLayout(manifest) {
 }
 
 /**
- * 渲染单个标签页内容
- * @param {Array} items - 该分类下的文档列表
- * @param {string} category - 分类名称
- * @returns {string} - HTML 字符串
- */
-function renderTabContent(items, category) {
-  const tabNames = { wen: '文', shi: '诗', ci: '词' };
-  const links = items
-    .map((item, index) => {
-      const color = COLORS[index % COLORS.length];
-      return `          <a class="wyw-tab-item" href="${escapeAttr(item.href)}" style="color: ${color}">${escapeHtml(item.title)}</a>`;
-    })
-    .join('\n');
-
-  return `      <div class="wyw-tab-content" data-tab="${category}">
-        <div class="wyw-tab-list">
-${links}
-        </div>
-      </div>`;
-}
-
-/**
  * 生成首页完整 HTML
  * @param {Array} layoutItems - computeWordCloudLayout 的输出
  * @param {Array} manifest - 完整文档清单
  * @returns {string} - 完整 HTML 页面
  */
 export function renderHomepage(layoutItems, manifest) {
-  // 词云模式内容
-  const cloudItems = layoutItems
-    .map((item) => {
-      const style = [
-        `top: ${item.top}%`,
-        `left: ${item.left}%`,
-        `font-size: ${item.fontSize}em`,
-        `color: ${item.color}`,
-        'transform: translate(-50%, -50%)' +
-          (item.rotation ? ` rotate(${item.rotation}deg)` : ''),
-      ].join('; ');
-
-      const titleAttr = item.tooltip ? ` title="${escapeAttr(item.tooltip)}"` : '';
-
-      return `        <a class="wyw-cloud-item" href="${escapeAttr(item.href)}" style="${style}"${titleAttr}>${escapeHtml(item.title)}</a>`;
-    })
-    .join('\n');
-
   // 按分类分组
   const categories = ['wen', 'shi', 'ci'];
   const tabNames = { wen: '文', shi: '诗', ci: '词' };
@@ -220,125 +182,31 @@ export function renderHomepage(layoutItems, manifest) {
     grouped[cat] = manifest.filter((item) => item.category === cat);
   }
 
-  // 标签页导航
-  const tabNavItems = categories
-    .map(
-      (cat, index) =>
-        `        <button class="wyw-tab${index === 0 ? ' wyw-tab--active' : ''}" data-tab="${cat}">${tabNames[cat]}</button>`
-    )
-    .join('\n');
+  // 标签页导航数据
+  const tabNavItems = categories.map((cat, index) => ({
+    tab: cat,
+    label: tabNames[cat],
+    active: index === 0,
+  }));
 
-  // 标签页内容
-  const tabContents = categories
-    .map((cat, index) => {
-      const items = grouped[cat];
-      const links = items
-        .map((item, i) => {
-          const color = COLORS[i % COLORS.length];
-          return `          <a class="wyw-tab-item" href="${escapeAttr(item.href)}" style="color: ${color}">${escapeHtml(item.title)}</a>`;
-        })
-        .join('\n');
-      return `      <div class="wyw-tab-content${index === 0 ? ' wyw-tab-content--active' : ''}" data-tab="${cat}">
-        <div class="wyw-tab-list">
-${links}
-        </div>
-      </div>`;
-    })
-    .join('\n');
-
-  return `<!DOCTYPE html>
-<html lang="zh-Hans" data-theme="auto">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>文言诗词</title>
-  <link rel="stylesheet" href="wyw.css">
-  <link rel="stylesheet" href="home.css">
-</head>
-<body>
-  <main class="wyw-home">
-    <!-- 模式切换按钮 -->
-    <div class="wyw-mode-switch">
-      <button class="wyw-mode-btn wyw-mode-btn--active" data-mode="cloud" title="词云视图"><img src="cloud.png" alt="词云" class="wyw-mode-icon"></button>
-      <button class="wyw-mode-btn" data-mode="tab" title="列表视图"><img src="list.png" alt="列表" class="wyw-mode-icon"></button>
-    </div>
-
-    <!-- 词云模式 -->
-    <div class="wyw-cloud wyw-mode-content wyw-mode-content--active" data-mode="cloud" role="navigation" aria-label="作品列表">
-      <h1 class="wyw-cloud-center">文言诗词</h1>
-${cloudItems}
-    </div>
-
-    <!-- 标签页模式 -->
-    <div class="wyw-tabs-container wyw-mode-content" data-mode="tab">
-      <h1 class="wyw-tabs-title">文言诗词</h1>
-      <nav class="wyw-tabs" role="tablist">
-${tabNavItems}
-      </nav>
-      <div class="wyw-tabs-body">
-${tabContents}
-      </div>
-    </div>
-
-    <footer class="wyw-home-footer">
-      <p>文 &middot; 诗 &middot; 词</p>
-    </footer>
-  </main>
-  <script>
-(function() {
-  var viewModes = document.querySelectorAll('.wyw-mode-btn');
-  var modeContents = document.querySelectorAll('.wyw-mode-content');
-  var tabs = document.querySelectorAll('.wyw-tab');
-  var tabContents = document.querySelectorAll('.wyw-tab-content');
-
-  // 模式切换
-  viewModes.forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var mode = btn.getAttribute('data-mode');
-      viewModes.forEach(function(b) { b.classList.remove('wyw-mode-btn--active'); });
-      btn.classList.add('wyw-mode-btn--active');
-      modeContents.forEach(function(content) {
-        if (content.getAttribute('data-mode') === mode) {
-          content.classList.add('wyw-mode-content--active');
-        } else {
-          content.classList.remove('wyw-mode-content--active');
-        }
-      });
-    });
+  // 标签页内容数据
+  const tabContents = categories.map((cat, index) => {
+    const items = grouped[cat].map((item, i) => ({
+      title: item.title,
+      href: item.href,
+      color: COLORS[i % COLORS.length],
+    }));
+    return {
+      tab: cat,
+      active: index === 0,
+      items,
+    };
   });
 
-  // 标签页切换
-  tabs.forEach(function(tab) {
-    tab.addEventListener('click', function() {
-      var targetTab = tab.getAttribute('data-tab');
-      tabs.forEach(function(t) { t.classList.remove('wyw-tab--active'); });
-      tab.classList.add('wyw-tab--active');
-      tabContents.forEach(function(content) {
-        if (content.getAttribute('data-tab') === targetTab) {
-          content.classList.add('wyw-tab-content--active');
-        } else {
-          content.classList.remove('wyw-tab-content--active');
-        }
-      });
-    });
+  const template = loadTemplate('homepage');
+  return template({
+    cloudItems: layoutItems,
+    tabNavItems,
+    tabContents,
   });
-})();
-  </script>
-</body>
-</html>`;
-}
-
-function escapeHtml(text) {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
-
-function escapeAttr(text) {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
 }

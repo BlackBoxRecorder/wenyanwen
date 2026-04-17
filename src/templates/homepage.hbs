@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" data-theme="auto">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文言诗词</title>
+  <link rel="stylesheet" href="wyw.css">
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+  <main class="wyw-home">
+    <!-- 模式切换按钮 -->
+    <div class="wyw-mode-switch">
+      <button class="wyw-mode-btn wyw-mode-btn--active" data-mode="cloud" title="词云视图"><img src="cloud.png" alt="词云" class="wyw-mode-icon"></button>
+      <button class="wyw-mode-btn" data-mode="tab" title="列表视图"><img src="list.png" alt="列表" class="wyw-mode-icon"></button>
+    </div>
+
+    <!-- 词云模式 -->
+    <div class="wyw-cloud wyw-mode-content wyw-mode-content--active" data-mode="cloud" role="navigation" aria-label="作品列表">
+      <h1 class="wyw-cloud-center">文言诗词</h1>
+{{#each cloudItems}}
+      <a class="wyw-cloud-item" href="{{href}}" style="top: {{top}}%; left: {{left}}%; font-size: {{fontSize}}em; color: {{color}}; transform: translate(-50%, -50%){{#if rotation}} rotate({{rotation}}deg){{/if}}"{{#if tooltip}} title="{{tooltip}}"{{/if}}>{{title}}</a>
+{{/each}}
+    </div>
+
+    <!-- 标签页模式 -->
+    <div class="wyw-tabs-container wyw-mode-content" data-mode="tab">
+      <h1 class="wyw-tabs-title">文言诗词</h1>
+      <nav class="wyw-tabs" role="tablist">
+{{#each tabNavItems}}
+        <button class="wyw-tab{{#if active}} wyw-tab--active{{/if}}" data-tab="{{tab}}">{{label}}</button>
+{{/each}}
+      </nav>
+      <div class="wyw-tabs-body">
+{{#each tabContents}}
+        <div class="wyw-tab-content{{#if active}} wyw-tab-content--active{{/if}}" data-tab="{{tab}}">
+          <div class="wyw-tab-list">
+{{#each items}}
+            <a class="wyw-tab-item" href="{{href}}" style="color: {{color}}">{{title}}</a>
+{{/each}}
+          </div>
+        </div>
+{{/each}}
+      </div>
+    </div>
+
+    <footer class="wyw-home-footer">
+      <p>文 &middot; 诗 &middot; 词</p>
+    </footer>
+  </main>
+  <script>
+(function() {
+  var viewModes = document.querySelectorAll('.wyw-mode-btn');
+  var modeContents = document.querySelectorAll('.wyw-mode-content');
+  var tabs = document.querySelectorAll('.wyw-tab');
+  var tabContents = document.querySelectorAll('.wyw-tab-content');
+
+  // 模式切换
+  viewModes.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var mode = btn.getAttribute('data-mode');
+      viewModes.forEach(function(b) { b.classList.remove('wyw-mode-btn--active'); });
+      btn.classList.add('wyw-mode-btn--active');
+      modeContents.forEach(function(content) {
+        if (content.getAttribute('data-mode') === mode) {
+          content.classList.add('wyw-mode-content--active');
+        } else {
+          content.classList.remove('wyw-mode-content--active');
+        }
+      });
+    });
+  });
+
+  // 标签页切换
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var targetTab = tab.getAttribute('data-tab');
+      tabs.forEach(function(t) { t.classList.remove('wyw-tab--active'); });
+      tab.classList.add('wyw-tab--active');
+      tabContents.forEach(function(content) {
+        if (content.getAttribute('data-tab') === targetTab) {
+          content.classList.add('wyw-tab-content--active');
+        } else {
+          content.classList.remove('wyw-tab-content--active');
+        }
+      });
+    });
+  });
+})();
+  </script>
+</body>
+</html>

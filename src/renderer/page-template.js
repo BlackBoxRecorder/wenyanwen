@@ -4,6 +4,7 @@
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadTemplate, Handlebars } from '../templates/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ASSETS_DIR = join(__dirname, '..', 'assets');
@@ -48,21 +49,15 @@ export function renderPage(options) {
     jsTag = `<script src="${assetsPath}wyw.js"></script>`;
   }
 
-  return `<!DOCTYPE html>
-<html lang="zh-Hans" data-theme="${theme}">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${escapeHtml(title)}</title>
-  ${cssTag}
-</head>
-<body>
-  <article class="${articleClasses}">
-    ${body}
-  </article>
-  ${jsTag}
-</body>
-</html>`;
+  const template = loadTemplate('page');
+  return template({
+    title: escapeHtml(title),
+    theme,
+    articleClasses,
+    body,
+    cssTag: new Handlebars.SafeString(cssTag),
+    jsTag: new Handlebars.SafeString(jsTag),
+  });
 }
 
 function escapeHtml(text) {
