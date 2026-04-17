@@ -112,6 +112,8 @@ function build() {
   cpSync(join(ASSETS_DIR, 'wyw.css'), join(DIST, 'wyw.css'));
   cpSync(join(ASSETS_DIR, 'wyw.js'), join(DIST, 'wyw.js'));
   cpSync(join(__dirname, 'home.css'), join(DIST, 'home.css'));
+  cpSync(join(ASSETS_DIR, 'cloud.png'), join(DIST, 'cloud.png'));
+  cpSync(join(ASSETS_DIR, 'list.png'), join(DIST, 'list.png'));
 
   console.log(`\n构建完成: ${pageCount} 个详情页 + 1 个首页 → dist/`);
 }

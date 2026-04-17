@@ -259,8 +259,8 @@ ${links}
   <main class="wyw-home">
     <!-- 模式切换按钮 -->
     <div class="wyw-mode-switch">
-      <button class="wyw-mode-btn wyw-mode-btn--active" data-mode="cloud" title="词云视图">云</button>
-      <button class="wyw-mode-btn" data-mode="tab" title="列表视图">表</button>
+      <button class="wyw-mode-btn wyw-mode-btn--active" data-mode="cloud" title="词云视图"><img src="cloud.png" alt="词云" class="wyw-mode-icon"></button>
+      <button class="wyw-mode-btn" data-mode="tab" title="列表视图"><img src="list.png" alt="列表" class="wyw-mode-icon"></button>
     </div>
 
     <!-- 词云模式 -->
