@@ -19,7 +19,7 @@ const PATTERNS = [
       return createRubyAnnotate(items, match[2]);
     },
   },
-  // 注音: {字|pīn yīn}
+  // 注音: {字|pīn}
   {
     regex: /\{([^|{}]+)\|([^}]+)\}/,
     create: (match) => createRuby(match[1], match[2]),
