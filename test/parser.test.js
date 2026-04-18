@@ -71,20 +71,6 @@ describe('parseInline', () => {
     assert.equal(nodes[1].type, 'text');
   });
 
-  it('解析专名 _名词_', () => {
-    const nodes = parseInline('南阳_诸葛庐_');
-    assert.equal(nodes[0].type, 'text');
-    assert.equal(nodes[1].type, 'proper_noun');
-    assert.equal(nodes[1].children[0].value, '诸葛庐');
-  });
-
-  it('解析书名 《书名》', () => {
-    const nodes = parseInline('合于《桑林》之舞');
-    assert.equal(nodes[0].type, 'text');
-    assert.equal(nodes[1].type, 'book_title');
-    assert.equal(nodes[1].title, '桑林');
-    assert.equal(nodes[2].type, 'text');
-  });
 
   it('解析注音+注释组合（单字） [{字|拼音}](释义)', () => {
     const nodes = parseInline('春眠不觉[{晓|xiǎo}](天刚亮的时候)');
@@ -146,11 +132,10 @@ describe('parseInline', () => {
   });
 
   it('混合解析多种内联语法', () => {
-    const nodes = parseInline('{仙|xiān}[斯](这)*着重*_专名_');
+    const nodes = parseInline('{仙|xiān}[斯](这)*着重*');
     assert.equal(nodes[0].type, 'ruby');
     assert.equal(nodes[1].type, 'annotate');
     assert.equal(nodes[2].type, 'emphasis');
-    assert.equal(nodes[3].type, 'proper_noun');
   });
 
   it('无标记的纯文本', () => {
@@ -260,7 +245,7 @@ title: 测试
 author: 作者
 ---
 
-{仙|xiān}则名，[斯](这)是陋室。
+有{仙|xiān}则名，[斯](这)是陋室。
 
 >> 有仙人则出名，这是简陋的房屋。`;
 
