@@ -161,7 +161,7 @@ IN_BLOCKQUOTE ──其他──→ flush引用 + 回退行 + IDLE
 解析前：                           分组后：
 ┌──────────────┐                  ┌──────────────────────────┐
 │ paragraph    │                  │ paragraph_group           │
-│ "山不在高"    │      ──→        │   paragraph: "山不在高"   │
+│ "山不在高"    │      ──          │   paragraph: "山不在高"   │
 ├──────────────┤                  │   translation: "山不在..." │
 │ translation  │                  └──────────────────────────┘
 │ "山不在..."   │
@@ -201,8 +201,6 @@ IN_BLOCKQUOTE ──其他──→ flush引用 + 回退行 + IDLE
 | `annotate` | `{ type, text, note }` | 注释：`[词](释义)` |
 | `ruby_annotate` | `{ type, items, note }` | 注音+注释组合，items 为 `[{ base, annotation }]` |
 | `emphasis` | `{ type, children }` | 着重：`*文本*` |
-| `proper_noun` | `{ type, children }` | 专名：`_文本_` |
-| `book_title` | `{ type, title }` | 书名：`《书名》` |
 
 ### 1.5 内联解析
 
@@ -212,16 +210,14 @@ IN_BLOCKQUOTE ──其他──→ flush引用 + 回退行 + IDLE
 
 #### 匹配优先级
 
-解析器定义了 6 种内联模式，按以下优先级尝试匹配：
+解析器定义了 4 种内联模式，按以下优先级尝试匹配：
 
 | 优先级 | 语法 | 正则 | 产生的节点 |
 |--------|------|------|-----------|
 | 1 | `[{字\|拼音}{字}...](释义)` | `\[((?:\{[^}]+\})+)\]\(([^)]+)\)` | `ruby_annotate` |
-| 2 | `{字\|拼音}` | `\{([^|{}]+)\|([^}]+)\}` | `ruby` |
+| 2 | `{字\|拼音}` | `\{([^\|{}]+)\|([^}]+)\}` | `ruby` |
 | 3 | `[词](释义)` | `\[[^\]]+\]\([^)]+\)` | `annotate` |
-| 4 | `《书名》` | `《([^》]+)》` | `book_title` |
-| 5 | `*文本*` | `\*([^*]+)\*` | `emphasis` |
-| 6 | `_文本_` | `_([^_]+)_` | `proper_noun` |
+| 4 | `*文本*` | `\*([^*]+)\*` | `emphasis` |
 
 #### 解析算法
 
@@ -248,7 +244,7 @@ IN_BLOCKQUOTE ──其他──→ flush引用 + 回退行 + IDLE
 输出: [text("有"), ruby("仙","xiān"), text("则"), annotate("斯","这"), text("是")]
 ```
 
-**递归解析：** `emphasis` 和 `proper_noun` 模式会递归调用 `parseInline()` 解析内部内容，支持嵌套。
+**递归解析：** `emphasis` 模式会递归调用 `parseInline()` 解析内部内容，支持嵌套。
 
 **`ruby_annotate` 的特殊处理：** 中括号内的大括号序列通过 `parseRubyBlocks()` 函数单独解析，将 `{穹|qióng}{庐}` 拆分为 `[{ base: '穹', annotation: 'qióng' }, { base: '庐', annotation: null }]`。
 
@@ -272,7 +268,7 @@ IN_BLOCKQUOTE ──其他──→ flush引用 + 回退行 + IDLE
 
 | AST 节点类型 | 输出 HTML | 渲染函数 |
 |-------------|----------|---------|
-| `heading` | `<h2>...<h3>...` (level+1) | `renderHeading()` |
+| `heading` | `<h2>...<h3>...` | `renderHeading()` |
 | `paragraph_group` | `<div class="wyw-para-group">` | `renderParagraphGroup()` |
 | `paragraph` | `<p>...</p>` | 直接渲染 |
 | `translation` | `<p class="wyw-translation">...</p>` | 直接渲染 |
@@ -324,8 +320,6 @@ IN_BLOCKQUOTE ──其他──→ flush引用 + 回退行 + IDLE
 | `ruby_annotate`(单字) | `<ruby><span class="wyw-annotate" data-note="释义">字</span><rp>(</rp><rt>拼音</rt><rp>)</rp></ruby>` | 注音+注释合一 |
 | `ruby_annotate`(多字) | `<ruby><span class="wyw-annotate" data-note="释义"><ruby>字1<rt>拼音1</rt></ruby>字2</span></ruby>` | 整词注释+逐字注音 |
 | `emphasis` | `<em>...</em>` | 着重标记 |
-| `proper_noun` | `<span class="wyw-proper">...</span>` | 专名标记 |
-| `book_title` | `<cite>书名</cite>` | 书名（CSS 伪元素添加书名号） |
 
 **`ruby_annotate` 的两种渲染路径：**
 

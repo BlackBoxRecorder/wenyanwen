@@ -153,11 +153,13 @@ function renderInline(node) {
       }
       // 多字注音+注释: 内部每字各自渲染 ruby，外部用 annotate span 包裹
       const innerHtml = items.map(item => {
-        if (item.annotation) {
+        if (item.annotation) { // 有注音
           return `<ruby>${escapeHtml(item.base)}<rp>(</rp><rt>${escapeHtml(item.annotation)}</rt><rp>)</rp></ruby>`;
         }
-        return escapeHtml(item.base);
+        return escapeHtml(item.base); // 无注音
       }).join('');
+
+      // 内层多个注音，外层一个注释
       return `<ruby><span class="wyw-annotate" data-note="${escapeAttr(note)}">${innerHtml}</span></ruby>`;
     }
 

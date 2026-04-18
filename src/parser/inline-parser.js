@@ -49,21 +49,34 @@ function parseRubyBlocks(str) {
 
 /**
  * 解析一段文本中的内联标记
- * @param {string} text - 待解析的文本
- * @returns {Array} - Inline AST 节点数组
+ *
+ * 算法：从左到右逐段扫描，每轮在剩余文本中查找所有模式中最早出现的匹配，
+ * 将匹配前的文本作为纯文本节点、匹配部分交由对应模式的 create 函数生成 AST 节点，
+ * 然后继续处理匹配之后的文本，直到全部文本被消费完毕。
+ *
+ * 支持的 4 种内联语法（按 PATTERNS 中的优先级排列）：
+ *   1. 注音+注释组合: [{穹|qióng}{庐}](毡帐) → ruby_annotate 节点
+ *   2. 注音:          {穹|qióng}               → ruby 节点
+ *   3. 注释:          [词](释义)                → annotate 节点
+ *   4. 着重:          *文本*                    → emphasis 节点（内部递归解析）
+ *
+ * @param {string} text - 待解析的文本（通常是一个段落的内联内容）
+ * @returns {Array<import('./ast.js').InlineNode>} - Inline AST 节点数组
  */
 export function parseInline(text) {
+  // 空输入直接返回空数组
   if (!text) return [];
 
-  const nodes = [];
-  let remaining = text;
+  const nodes = [];     // 累积生成的 AST 节点
+  let remaining = text; // 尚未处理的剩余文本
 
   while (remaining.length > 0) {
-    // 在剩余文本中查找最早出现的匹配
-    let earliest = null;
-    let earliestIndex = Infinity;
-    let earliestPattern = null;
+    // 每轮循环：在剩余文本中查找所有模式中最早出现的匹配
+    let earliest = null;         // 最早的匹配对象（RegExp match result）
+    let earliestIndex = Infinity; // 最早匹配在 remaining 中的起始位置
+    let earliestPattern = null;  // 最早匹配对应的模式定义（含 regex 和 create）
 
+    // 遍历所有模式，取位置最靠前的匹配（先到先得，而非按模式优先级抢占）
     for (const pattern of PATTERNS) {
       const match = remaining.match(pattern.regex);
       if (match && match.index < earliestIndex) {
@@ -74,20 +87,21 @@ export function parseInline(text) {
     }
 
     if (!earliest) {
-      // 没有更多匹配，剩余全部为纯文本
+      // 没有更多内联标记匹配，将剩余文本整体作为纯文本节点
       nodes.push(createText(remaining));
       break;
     }
 
-    // 匹配之前的纯文本
+    // 匹配位置之前若有文本，生成纯文本节点保留
     if (earliestIndex > 0) {
       nodes.push(createText(remaining.slice(0, earliestIndex)));
     }
 
-    // 创建匹配的节点（传入递归解析函数给需要嵌套解析的模式）
+    // 调用匹配模式对应的 create 函数生成 AST 节点
+    // 第二个参数传入 parseInline 自身，使着重号等模式可递归解析嵌套内容
     nodes.push(earliestPattern.create(earliest, parseInline));
 
-    // 继续处理匹配之后的文本
+    // 截断已处理部分（匹配位置 + 匹配全长），继续处理后续文本
     remaining = remaining.slice(earliestIndex + earliest[0].length);
   }
 
