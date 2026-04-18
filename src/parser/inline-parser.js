@@ -6,23 +6,18 @@ import {
   createRuby,
   createAnnotate,
   createEmphasis,
-  createProperNoun,
-  createBookTitle,
   createRubyAnnotate,
-  createRubyAnnotateFull,
 } from './ast.js';
 
 // 内联语法的正则模式（按匹配优先级排列）
 const PATTERNS = [
-  // 注音+注释整词组合: {字|pīn yīn|整词}(释义)
+  // 注音+注释组合: [{字|拼音}{字}...](释义)
   {
-    regex: /\{([^|{}]+)\|([^|{}]+)\|([^}]+)\}\(([^)]+)\)/,
-    create: (match) => createRubyAnnotateFull(match[1], match[2], match[3], match[4]),
-  },
-  // 注音+注释组合: {字|pīn yīn}[字](释义)
-  {
-    regex: /\{([^|{}]+)\|([^}]+)\}\[\1\]\(([^)]+)\)/,
-    create: (match) => createRubyAnnotate(match[1], match[2], match[3]),
+    regex: /\[((?:\{[^}]+\})+)\]\(([^)]+)\)/,
+    create: (match) => {
+      const items = parseRubyBlocks(match[1]);
+      return createRubyAnnotate(items, match[2]);
+    },
   },
   // 注音: {字|pīn yīn}
   {
@@ -34,22 +29,23 @@ const PATTERNS = [
     regex: /\[([^\]]+)\]\(([^)]+)\)/,
     create: (match) => createAnnotate(match[1], match[2]),
   },
-  // 书名: 《书名》
-  {
-    regex: /《([^》]+)》/,
-    create: (match) => createBookTitle(match[1]),
-  },
   // 着重: *文本*（不匹配两侧的 *，要求内容非空）
   {
     regex: /\*([^*]+)\*/,
     create: (match, parseInline) => createEmphasis(parseInline(match[1])),
   },
-  // 专名: _文本_（下划线包裹）
-  {
-    regex: /_([^_]+)_/,
-    create: (match, parseInline) => createProperNoun(parseInline(match[1])),
-  },
 ];
+
+/**
+ * 解析大括号块序列，如 "{穹|qióng}{庐}" -> [{base:'穹', annotation:'qióng'}, {base:'庐', annotation:null}]
+ */
+function parseRubyBlocks(str) {
+  const items = [];
+  for (const m of str.matchAll(/\{([^|{}]+)(?:\|([^}]+))?\}/g)) {
+    items.push({ base: m[1], annotation: m[2] || null });
+  }
+  return items;
+}
 
 /**
  * 解析一段文本中的内联标记
