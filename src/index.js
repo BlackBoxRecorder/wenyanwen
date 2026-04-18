@@ -1,8 +1,8 @@
 // wenyanwen 公共 API
 
-import { parse } from './parser/block-parser.js';
-import { renderBody } from './renderer/html-renderer.js';
-import { renderPage } from './renderer/page-template.js';
+import { parse } from "./parser/block-parser.js";
+import { renderBody } from "./renderer/html-renderer.js";
+import { renderPage } from "./renderer/page-template.js";
 
 /**
  * 编译 .wyw 源文本为完整 HTML 页面
@@ -21,12 +21,12 @@ export function compile(source, options = {}) {
     meta: doc.meta,
     body,
     inline: options.inline || false,
-    assetsPath: options.assetsPath || '',
-    theme: options.theme || 'auto',
+    assetsPath: options.assetsPath || "",
+    theme: options.theme || "auto",
     showTranslation: options.showTranslation !== false,
   });
 }
 
-export { parse } from './parser/block-parser.js';
-export { renderBody } from './renderer/html-renderer.js';
-export { renderPage } from './renderer/page-template.js';
+export { parse } from "./parser/block-parser.js";
+export { renderBody } from "./renderer/html-renderer.js";
+export { renderPage } from "./renderer/page-template.js";

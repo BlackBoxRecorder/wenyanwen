@@ -5,21 +5,21 @@
  * 读取 title.csv，批量调用 ai.js 生成文言文、诗、词并保存为 .wyw 格式
  */
 
-import { Command } from 'commander';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
-import { readFile } from 'fs/promises';
-import { spawn } from 'child_process';
+import { Command } from "commander";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
+import { readFile } from "fs/promises";
+import { spawn } from "child_process";
 import {
   TYPE_TO_DIR,
   TYPE_CN_TO_EN,
   generateFileName,
   fileExists,
-} from './lib/ai_util.js';
+} from "./lib/ai_util.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const PROJECT_ROOT = join(__dirname, '..');
+const PROJECT_ROOT = join(__dirname, "..");
 
 // 并发控制限制
 const CONCURRENCY_LIMIT = 10;
@@ -29,20 +29,24 @@ const CONCURRENCY_LIMIT = 10;
  */
 function parseArgs() {
   const program = new Command();
-  
+
   program
-    .name('batch-ai')
-    .description('批量生成文言文、诗、词并保存为 .wyw 格式')
-    .version('1.0.0');
-  
+    .name("batch-ai")
+    .description("批量生成文言文、诗、词并保存为 .wyw 格式")
+    .version("1.0.0");
+
   program
-    .option('-o, --output <dir>', '输出目录', join(PROJECT_ROOT, 'wywdocs'))
-    .option('-i, --input <file>', '输入 CSV 文件', join(__dirname, 'title.csv'));
-  
+    .option("-o, --output <dir>", "输出目录", join(PROJECT_ROOT, "wywdocs"))
+    .option(
+      "-i, --input <file>",
+      "输入 CSV 文件",
+      join(__dirname, "title.csv"),
+    );
+
   program.parse(process.argv);
-  
+
   const options = program.opts();
-  
+
   return options;
 }
 
@@ -51,24 +55,24 @@ function parseArgs() {
  * @param {string} filePath CSV 文件路径
  */
 async function parseCSV(filePath) {
-  const content = await readFile(filePath, 'utf-8');
-  const lines = content.trim().split('\n');
-  
+  const content = await readFile(filePath, "utf-8");
+  const lines = content.trim().split("\n");
+
   const records = [];
-  
+
   // 跳过表头
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue;
-    
+
     // 解析格式：作者姓名,作品标题,类型
-    const parts = line.split(',');
+    const parts = line.split(",");
     if (parts.length >= 3) {
       const author = parts[0].trim();
       const title = parts[1].trim();
       const typeCN = parts[2].trim();
       const type = TYPE_CN_TO_EN[typeCN];
-      
+
       if (type) {
         records.push({ author, title, type, typeCN });
       } else {
@@ -76,7 +80,7 @@ async function parseCSV(filePath) {
       }
     }
   }
-  
+
   return records;
 }
 
@@ -90,42 +94,46 @@ async function parseCSV(filePath) {
  */
 function callAiJs(title, author, type, options) {
   const { output } = options;
-  const aiJsPath = join(__dirname, 'ai.js');
+  const aiJsPath = join(__dirname, "ai.js");
 
   const args = [
     aiJsPath,
-    'generate',
-    '-t', title,
-    '-a', author,
-    '--type', type,
-    '-o', output,
+    "generate",
+    "-t",
+    title,
+    "-a",
+    author,
+    "--type",
+    type,
+    "-o",
+    output,
   ];
 
   return new Promise((resolve) => {
-    const child = spawn('node', args, {
-      stdio: ['ignore', 'pipe', 'pipe'],
+    const child = spawn("node", args, {
+      stdio: ["ignore", "pipe", "pipe"],
     });
 
-    let stdout = '';
-    let stderr = '';
+    let stdout = "";
+    let stderr = "";
 
-    child.stdout.on('data', (data) => {
+    child.stdout.on("data", (data) => {
       stdout += data.toString();
     });
 
-    child.stderr.on('data', (data) => {
+    child.stderr.on("data", (data) => {
       stderr += data.toString();
     });
 
-    child.on('close', (code) => {
+    child.on("close", (code) => {
       if (code === 0) {
         resolve({ success: true });
       } else {
-        resolve({ success: false, error: stderr || '未知错误' });
+        resolve({ success: false, error: stderr || "未知错误" });
       }
     });
 
-    child.on('error', (error) => {
+    child.on("error", (error) => {
       resolve({ success: false, error: error.message });
     });
   });
@@ -177,7 +185,7 @@ async function processTask(record, index, total, options, stats) {
  */
 async function runWithConcurrency(records, options) {
   const total = records.length;
-  
+
   // 统计对象（在并发中安全更新）
   const stats = {
     successCount: 0,
@@ -205,11 +213,16 @@ async function runWithConcurrency(records, options) {
     if (!task) return;
 
     const { record, index } = task;
-    const taskPromise = processTask(record, index, total, options, stats)
-      .finally(() => {
-        runningTasks.delete(index);
-      });
-    
+    const taskPromise = processTask(
+      record,
+      index,
+      total,
+      options,
+      stats,
+    ).finally(() => {
+      runningTasks.delete(index);
+    });
+
     runningTasks.set(index, taskPromise);
   };
 
@@ -241,9 +254,9 @@ async function main() {
 
   const { output, input } = options;
 
-  console.log('\n========================================');
-  console.log('  批量生成文言文、诗、词');
-  console.log('========================================\n');
+  console.log("\n========================================");
+  console.log("  批量生成文言文、诗、词");
+  console.log("========================================\n");
 
   try {
     // 解析 CSV
@@ -256,24 +269,23 @@ async function main() {
     const stats = await runWithConcurrency(records, options);
 
     // 输出统计
-    console.log('\n========================================');
-    console.log('  生成完成');
-    console.log('========================================');
+    console.log("\n========================================");
+    console.log("  生成完成");
+    console.log("========================================");
     console.log(`  成功: ${stats.successCount}`);
     console.log(`  跳过: ${stats.skipCount}`);
     console.log(`  失败: ${stats.failCount}`);
-    console.log('========================================\n');
+    console.log("========================================\n");
 
     // 输出失败列表
     if (stats.failedRecords.length > 0) {
-      console.log('失败列表:');
+      console.log("失败列表:");
       stats.failedRecords.forEach((r, i) => {
         console.log(`  ${i + 1}. ${r.title} - ${r.author} (${r.typeCN})`);
         console.log(`     错误: ${r.error}`);
       });
-      console.log('');
+      console.log("");
     }
-
   } catch (error) {
     console.error(`\n错误: ${error.message}\n`);
     process.exit(1);

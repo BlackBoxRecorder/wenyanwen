@@ -1,10 +1,10 @@
 // Handlebars 模板加载器
 // 读取并编译 .hbs 模板文件
 
-import { readFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import Handlebars from 'handlebars';
+import { readFileSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import Handlebars from "handlebars";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATES_DIR = __dirname;
@@ -23,7 +23,7 @@ export function loadTemplate(name) {
   }
 
   const templatePath = join(TEMPLATES_DIR, `${name}.hbs`);
-  const source = readFileSync(templatePath, 'utf-8');
+  const source = readFileSync(templatePath, "utf-8");
   const template = Handlebars.compile(source);
 
   templateCache.set(name, template);

@@ -7,7 +7,7 @@ import {
   createAnnotate,
   createEmphasis,
   createRubyAnnotate,
-} from './ast.js';
+} from "./ast.js";
 
 // 内联语法的正则模式（按匹配优先级排列）
 const PATTERNS = [
@@ -67,14 +67,14 @@ export function parseInline(text) {
   // 空输入直接返回空数组
   if (!text) return [];
 
-  const nodes = [];     // 累积生成的 AST 节点
+  const nodes = []; // 累积生成的 AST 节点
   let remaining = text; // 尚未处理的剩余文本
 
   while (remaining.length > 0) {
     // 每轮循环：在剩余文本中查找所有模式中最早出现的匹配
-    let earliest = null;         // 最早的匹配对象（RegExp match result）
+    let earliest = null; // 最早的匹配对象（RegExp match result）
     let earliestIndex = Infinity; // 最早匹配在 remaining 中的起始位置
-    let earliestPattern = null;  // 最早匹配对应的模式定义（含 regex 和 create）
+    let earliestPattern = null; // 最早匹配对应的模式定义（含 regex 和 create）
 
     // 遍历所有模式，取位置最靠前的匹配（先到先得，而非按模式优先级抢占）
     for (const pattern of PATTERNS) {

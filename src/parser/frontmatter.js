@@ -8,22 +8,22 @@
  */
 export function parseFrontmatter(source) {
   const defaultMeta = {
-    title: '',
-    author: '',
-    dynasty: '',
-    source: '',
-    layout: 'ancient',
+    title: "",
+    author: "",
+    dynasty: "",
+    source: "",
+    layout: "ancient",
   };
 
   const trimmed = source.trimStart();
 
   // 检查是否以 --- 开头
-  if (!trimmed.startsWith('---')) {
+  if (!trimmed.startsWith("---")) {
     return { meta: defaultMeta, body: source };
   }
 
   // 查找结束的 ---
-  const endIndex = trimmed.indexOf('\n---', 3);
+  const endIndex = trimmed.indexOf("\n---", 3);
   if (endIndex === -1) {
     return { meta: defaultMeta, body: source };
   }
@@ -33,8 +33,8 @@ export function parseFrontmatter(source) {
 
   // 简单的 YAML 键值解析（不支持嵌套）
   const meta = { ...defaultMeta };
-  for (const line of yamlBlock.split('\n')) {
-    const colonIndex = line.indexOf(':');
+  for (const line of yamlBlock.split("\n")) {
+    const colonIndex = line.indexOf(":");
     if (colonIndex === -1) continue;
     const key = line.slice(0, colonIndex).trim();
     const value = line.slice(colonIndex + 1).trim();

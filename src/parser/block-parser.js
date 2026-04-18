@@ -11,16 +11,16 @@ import {
   createSectionBreak,
   createDocument,
   createProofreadDate,
-} from './ast.js';
-import { parseInline } from './inline-parser.js';
-import { parseFrontmatter } from './frontmatter.js';
+} from "./ast.js";
+import { parseInline } from "./inline-parser.js";
+import { parseFrontmatter } from "./frontmatter.js";
 
 // 状态常量
-const IDLE = 'IDLE';
-const IN_PARAGRAPH = 'IN_PARAGRAPH';
-const IN_TRANSLATION = 'IN_TRANSLATION';
-const IN_FENCED = 'IN_FENCED';
-const IN_BLOCKQUOTE = 'IN_BLOCKQUOTE';
+const IDLE = "IDLE";
+const IN_PARAGRAPH = "IN_PARAGRAPH";
+const IN_TRANSLATION = "IN_TRANSLATION";
+const IN_FENCED = "IN_FENCED";
+const IN_BLOCKQUOTE = "IN_BLOCKQUOTE";
 
 /**
  * 解析完整的 .wyw 源文件
@@ -29,7 +29,7 @@ const IN_BLOCKQUOTE = 'IN_BLOCKQUOTE';
  */
 export function parse(source) {
   const { meta, body } = parseFrontmatter(source);
-  const lines = body.split('\n');
+  const lines = body.split("\n");
   const blocks = parseBlocks(lines);
   const grouped = groupParagraphs(blocks);
   return createDocument(meta, grouped);
@@ -70,7 +70,7 @@ function parseBlocks(lines) {
   let buffer = [];
 
   // 围栏块相关变量
-  let fencedType = ''; // 围栏块类型（如 poetry）
+  let fencedType = ""; // 围栏块类型（如 poetry）
   let fencedMeta = null; // 围栏块元信息（:: 开头的行）
   let fencedTitle = null; // 围栏块标题（# 开头的行）
 
@@ -81,7 +81,7 @@ function parseBlocks(lines) {
    */
   function flushParagraph() {
     if (buffer.length > 0) {
-      const text = buffer.join('');
+      const text = buffer.join("");
       blocks.push(createParagraph(parseInline(text)));
       buffer = [];
     }
@@ -94,7 +94,7 @@ function parseBlocks(lines) {
    */
   function flushTranslation() {
     if (buffer.length > 0) {
-      const text = buffer.join('');
+      const text = buffer.join("");
       blocks.push(createTranslation(parseInline(text)));
       buffer = [];
     }
@@ -107,7 +107,7 @@ function parseBlocks(lines) {
    */
   function flushBlockquote() {
     if (buffer.length > 0) {
-      const text = buffer.join('');
+      const text = buffer.join("");
       blocks.push(createBlockquote(parseInline(text)));
       buffer = [];
     }
@@ -122,7 +122,7 @@ function parseBlocks(lines) {
     const poetryLines = buffer.map((line) => parseInline(line));
     blocks.push(createPoetryBlock(fencedTitle, fencedMeta, poetryLines));
     buffer = [];
-    fencedType = '';
+    fencedType = "";
     fencedMeta = null;
     fencedTitle = null;
   }
@@ -138,7 +138,7 @@ function parseBlocks(lines) {
       // 空闲状态：等待识别新的块级元素起始标记
       case IDLE: {
         // 跳过空行
-        if (trimmed === '') {
+        if (trimmed === "") {
           continue;
         }
 
@@ -150,7 +150,9 @@ function parseBlocks(lines) {
 
         // 校对日期标记: --YYYY 年 M 月 D 日--
         // 格式：--2024 年 1 月 15 日--
-        const dateMatch = trimmed.match(/^--(\d{4} 年 \d{1,2} 月 \d{1,2} 日)--$/);
+        const dateMatch = trimmed.match(
+          /^--(\d{4} 年 \d{1,2} 月 \d{1,2} 日)--$/,
+        );
         if (dateMatch) {
           blocks.push(createProofreadDate(dateMatch[1]));
           continue;
@@ -166,8 +168,8 @@ function parseBlocks(lines) {
         }
 
         // 围栏块开始: ::: type（默认类型为 poetry）
-        if (trimmed.startsWith(':::')) {
-          fencedType = trimmed.slice(3).trim() || 'poetry';
+        if (trimmed.startsWith(":::")) {
+          fencedType = trimmed.slice(3).trim() || "poetry";
           state = IN_FENCED;
           buffer = [];
           fencedMeta = null;
@@ -176,7 +178,7 @@ function parseBlocks(lines) {
         }
 
         // 译文: >> text（现代汉语翻译）
-        if (trimmed.startsWith('>>')) {
+        if (trimmed.startsWith(">>")) {
           const content = trimmed.slice(2).trim();
           buffer.push(content);
           state = IN_TRANSLATION;
@@ -184,7 +186,7 @@ function parseBlocks(lines) {
         }
 
         // 引用: > text（注意：>> 已被译文处理，这里排除）
-        if (trimmed.startsWith('>') && !trimmed.startsWith('>>')) {
+        if (trimmed.startsWith(">") && !trimmed.startsWith(">>")) {
           const content = trimmed.slice(1).trim();
           buffer.push(content);
           state = IN_BLOCKQUOTE;
@@ -201,14 +203,14 @@ function parseBlocks(lines) {
       // 正在累积普通段落内容
       case IN_PARAGRAPH: {
         // 空行表示段落结束
-        if (trimmed === '') {
+        if (trimmed === "") {
           flushParagraph();
           state = IDLE;
           continue;
         }
 
         // 遇到译文行，先 flush 当前段落，然后切换到译文状态
-        if (trimmed.startsWith('>>')) {
+        if (trimmed.startsWith(">>")) {
           flushParagraph();
           const content = trimmed.slice(2).trim();
           buffer.push(content);
@@ -225,7 +227,7 @@ function parseBlocks(lines) {
       // 正在累积译文内容
       case IN_TRANSLATION: {
         // 继续累积以 >> 开头的行
-        if (trimmed.startsWith('>>')) {
+        if (trimmed.startsWith(">>")) {
           const content = trimmed.slice(2).trim();
           buffer.push(content);
           continue;
@@ -243,7 +245,7 @@ function parseBlocks(lines) {
       // 正在处理围栏块（::: 包裹的内容）
       case IN_FENCED: {
         // 围栏结束标记 :::
-        if (trimmed === ':::') {
+        if (trimmed === ":::") {
           flushFenced();
           state = IDLE;
           continue;
@@ -257,18 +259,18 @@ function parseBlocks(lines) {
         }
 
         // 围栏内的元信息：:: text（注意：::: 是结束标记，这里排除）
-        if (trimmed.startsWith('::') && !trimmed.startsWith(':::')) {
+        if (trimmed.startsWith("::") && !trimmed.startsWith(":::")) {
           fencedMeta = trimmed.slice(2).trim();
           continue;
         }
 
         // 处理围栏内的内容行
-        if (trimmed !== '') {
+        if (trimmed !== "") {
           // 非空行直接加入 buffer
           buffer.push(trimmed);
         } else if (buffer.length > 0) {
           // 保留段落间的空行（但只在已有内容后）
-          buffer.push('');
+          buffer.push("");
         }
         break;
       }
@@ -277,7 +279,7 @@ function parseBlocks(lines) {
       // 正在累积引用内容
       case IN_BLOCKQUOTE: {
         // 继续累积以 > 开头的行（排除 >> 译文）
-        if (trimmed.startsWith('>') && !trimmed.startsWith('>>')) {
+        if (trimmed.startsWith(">") && !trimmed.startsWith(">>")) {
           const content = trimmed.slice(1).trim();
           buffer.push(content);
           continue;
@@ -322,16 +324,16 @@ function groupParagraphs(blocks) {
   for (let i = 0; i < blocks.length; i++) {
     const block = blocks[i];
 
-    if (block.type === 'paragraph') {
+    if (block.type === "paragraph") {
       // 检查下一个是否为 translation
       const next = blocks[i + 1];
-      if (next && next.type === 'translation') {
+      if (next && next.type === "translation") {
         result.push(createParagraphGroup(block, next));
         i++; // 跳过 translation
       } else {
         result.push(createParagraphGroup(block, null));
       }
-    } else if (block.type === 'translation') {
+    } else if (block.type === "translation") {
       // 孤立的 translation（前面没有 paragraph），包装成 group
       result.push(createParagraphGroup(null, block));
     } else {

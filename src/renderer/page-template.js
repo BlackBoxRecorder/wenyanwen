@@ -1,13 +1,13 @@
 // 页面模板
 // 生成完整的 HTML 页面，包装渲染好的 body 内容
 
-import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { loadTemplate, Handlebars } from '../templates/index.js';
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { loadTemplate, Handlebars } from "../templates/index.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const ASSETS_DIR = join(__dirname, '..', 'assets');
+const ASSETS_DIR = join(__dirname, "..", "assets");
 
 /**
  * 生成完整的 HTML 页面
@@ -25,23 +25,23 @@ export function renderPage(options) {
     meta,
     body,
     inline = false,
-    assetsPath = '',
-    theme = 'auto',
+    assetsPath = "",
+    theme = "auto",
     showTranslation = true,
   } = options;
 
   const title = meta.title
-    ? `${meta.title}${meta.author ? ` — ${meta.author}` : ''}`
-    : '文言文';
+    ? `${meta.title}${meta.author ? ` — ${meta.author}` : ""}`
+    : "文言文";
 
-  const layoutClass = meta.layout || 'ancient';
-  const articleClasses = `wyw wyw--${layoutClass} wyw--annotation${showTranslation ? '' : ' wyw--hide-translation'}`;
+  const layoutClass = meta.layout || "ancient";
+  const articleClasses = `wyw wyw--${layoutClass} wyw--annotation${showTranslation ? "" : " wyw--hide-translation"}`;
 
   let cssTag, jsTag;
 
   if (inline) {
-    const css = readFileSync(join(ASSETS_DIR, 'wyw.css'), 'utf-8');
-    const js = readFileSync(join(ASSETS_DIR, 'wyw.js'), 'utf-8');
+    const css = readFileSync(join(ASSETS_DIR, "wyw.css"), "utf-8");
+    const js = readFileSync(join(ASSETS_DIR, "wyw.js"), "utf-8");
     cssTag = `<style>\n${css}\n</style>`;
     jsTag = `<script>\n${js}\n</script>`;
   } else {
@@ -49,7 +49,7 @@ export function renderPage(options) {
     jsTag = `<script src="${assetsPath}wyw.js"></script>`;
   }
 
-  const template = loadTemplate('page');
+  const template = loadTemplate("page");
   return template({
     title: escapeHtml(title),
     theme,
@@ -62,7 +62,7 @@ export function renderPage(options) {
 
 function escapeHtml(text) {
   return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }

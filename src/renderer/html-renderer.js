@@ -11,7 +11,7 @@ export function renderBody(doc) {
 
   // 检查文档是否包含带标题的诗词块
   const hasPoetryWithTitle = doc.children.some(
-    block => block.type === 'poetry_block' && block.title
+    (block) => block.type === "poetry_block" && block.title,
   );
 
   // 渲染文档头部（如果文档不包含带标题的诗词块）
@@ -27,9 +27,9 @@ export function renderBody(doc) {
   for (const block of doc.children) {
     parts.push(renderBlock(block));
   }
-  parts.push('</section>');
+  parts.push("</section>");
 
-  return parts.join('\n');
+  return parts.join("\n");
 }
 
 function renderHeader(meta) {
@@ -42,16 +42,20 @@ function renderHeader(meta) {
   if (meta.author || meta.dynasty) {
     lines.push('  <p class="wyw-meta">');
     if (meta.dynasty) {
-      lines.push(`    <span class="wyw-dynasty">${escapeHtml(meta.dynasty)}</span>`);
+      lines.push(
+        `    <span class="wyw-dynasty">${escapeHtml(meta.dynasty)}</span>`,
+      );
     }
     if (meta.author) {
-      lines.push(`    <span class="wyw-author">${escapeHtml(meta.author)}</span>`);
+      lines.push(
+        `    <span class="wyw-author">${escapeHtml(meta.author)}</span>`,
+      );
     }
-    lines.push('  </p>');
+    lines.push("  </p>");
   }
 
-  lines.push('</header>');
-  return lines.join('\n');
+  lines.push("</header>");
+  return lines.join("\n");
 }
 
 function renderToolbar() {
@@ -63,24 +67,24 @@ function renderToolbar() {
 
 function renderBlock(block) {
   switch (block.type) {
-    case 'heading':
+    case "heading":
       return renderHeading(block);
-    case 'paragraph_group':
+    case "paragraph_group":
       return renderParagraphGroup(block);
-    case 'paragraph':
+    case "paragraph":
       return `<p>${renderInlineList(block.children)}</p>`;
-    case 'translation':
+    case "translation":
       return `<p class="wyw-translation">${renderInlineList(block.children)}</p>`;
-    case 'poetry_block':
+    case "poetry_block":
       return renderPoetryBlock(block);
-    case 'blockquote':
+    case "blockquote":
       return `<blockquote><p>${renderInlineList(block.children)}</p></blockquote>`;
-    case 'section_break':
+    case "section_break":
       return '<hr class="wyw-hr">';
-    case 'proofread_date':
+    case "proofread_date":
       return `<footer class="wyw-proofread">校对于：${escapeHtml(block.date)}</footer>`;
     default:
-      return '';
+      return "";
   }
 }
 
@@ -97,18 +101,22 @@ function renderParagraphGroup(block) {
   }
 
   if (block.translation) {
-    lines.push(`  <p class="wyw-translation">${renderInlineList(block.translation.children)}</p>`);
+    lines.push(
+      `  <p class="wyw-translation">${renderInlineList(block.translation.children)}</p>`,
+    );
   }
 
-  lines.push('</div>');
-  return lines.join('\n');
+  lines.push("</div>");
+  return lines.join("\n");
 }
 
 function renderPoetryBlock(block) {
   const lines = ['<div class="wyw-poetry">'];
 
   if (block.title) {
-    lines.push(`  <h1 class="wyw-poetry-title">${renderInlineList(block.title)}</h1>`);
+    lines.push(
+      `  <h1 class="wyw-poetry-title">${renderInlineList(block.title)}</h1>`,
+    );
   }
 
   if (block.meta) {
@@ -119,55 +127,60 @@ function renderPoetryBlock(block) {
   for (let i = 0; i < block.lines.length; i++) {
     const lineContent = renderInlineList(block.lines[i]);
     if (lineContent) {
-      lines.push(`    ${lineContent}${i < block.lines.length - 1 ? '<br>' : ''}`);
+      lines.push(
+        `    ${lineContent}${i < block.lines.length - 1 ? "<br>" : ""}`,
+      );
     }
   }
-  lines.push('  </p>');
-  lines.push('</div>');
-  return lines.join('\n');
+  lines.push("  </p>");
+  lines.push("</div>");
+  return lines.join("\n");
 }
 
 // === Inline 渲染 ===
 
 function renderInlineList(nodes) {
-  if (!nodes) return '';
-  return nodes.map(renderInline).join('');
+  if (!nodes) return "";
+  return nodes.map(renderInline).join("");
 }
 
 function renderInline(node) {
   switch (node.type) {
-    case 'text':
+    case "text":
       return escapeHtml(node.value);
 
-    case 'ruby':
+    case "ruby":
       return `<ruby>${escapeHtml(node.base)}<rp>(</rp><rt>${escapeHtml(node.annotation)}</rt><rp>)</rp></ruby>`;
 
-    case 'annotate':
+    case "annotate":
       return `<span class="wyw-annotate" data-note="${escapeAttr(node.note)}">${escapeHtml(node.text)}</span>`;
 
-    case 'ruby_annotate': {
+    case "ruby_annotate": {
       const { items, note } = node;
       if (items.length === 1 && items[0].annotation) {
         // 单字注音+注释: <ruby><span>base</span><rp>(</rp><rt>annotation</rt><rp>)</rp></ruby>
         return `<ruby><span class="wyw-annotate" data-note="${escapeAttr(note)}">${escapeHtml(items[0].base)}</span><rp>(</rp><rt>${escapeHtml(items[0].annotation)}</rt><rp>)</rp></ruby>`;
       }
       // 多字注音+注释: 内部每字各自渲染 ruby，外部用 annotate span 包裹
-      const innerHtml = items.map(item => {
-        if (item.annotation) { // 有注音
-          return `<ruby>${escapeHtml(item.base)}<rp>(</rp><rt>${escapeHtml(item.annotation)}</rt><rp>)</rp></ruby>`;
-        }
-        return escapeHtml(item.base); // 无注音
-      }).join('');
+      const innerHtml = items
+        .map((item) => {
+          if (item.annotation) {
+            // 有注音
+            return `<ruby>${escapeHtml(item.base)}<rp>(</rp><rt>${escapeHtml(item.annotation)}</rt><rp>)</rp></ruby>`;
+          }
+          return escapeHtml(item.base); // 无注音
+        })
+        .join("");
 
       // 内层多个注音，外层一个注释
       return `<ruby><span class="wyw-annotate" data-note="${escapeAttr(note)}">${innerHtml}</span></ruby>`;
     }
 
-    case 'emphasis':
+    case "emphasis":
       return `<em>${renderInlineList(node.children)}</em>`;
 
     default:
-      return '';
+      return "";
   }
 }
 
@@ -175,15 +188,15 @@ function renderInline(node) {
 
 function escapeHtml(text) {
   return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 function escapeAttr(text) {
   return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }

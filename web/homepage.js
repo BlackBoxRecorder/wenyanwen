@@ -1,25 +1,27 @@
 // 首页生成模块 — 词云布局 + HTML 模板
 
-import { loadTemplate } from '../src/templates/index.js';
+import { loadTemplate } from "../src/templates/index.js";
 
 /**
  * 传统中式配色方案
  */
 const COLORS = [
-  'hsl(30, 10%, 20%)',   // 墨色
-  'hsl(0, 65%, 48%)',    // 朱砂红
-  'hsl(210, 20%, 38%)',  // 青灰
-  'hsl(30, 25%, 35%)',   // 暖棕
-  'hsl(40, 35%, 42%)',   // 哑金
-  'hsl(0, 45%, 40%)',    // 暗红
-  'hsl(200, 15%, 30%)',  // 深青
-  'hsl(25, 20%, 28%)',   // 深棕
+  "hsl(30, 10%, 20%)", // 墨色
+  "hsl(0, 65%, 48%)", // 朱砂红
+  "hsl(210, 20%, 38%)", // 青灰
+  "hsl(30, 25%, 35%)", // 暖棕
+  "hsl(40, 35%, 42%)", // 哑金
+  "hsl(0, 45%, 40%)", // 暗红
+  "hsl(200, 15%, 30%)", // 深青
+  "hsl(25, 20%, 28%)", // 深棕
 ];
 
 /**
  * 字号档位（em 单位）
  */
-const FONT_SIZES = [1.9, 1.6, 1.35, 1.15, 0.95, 0.82, 0.72, 0.64, 0.56, 0.5, 0.45, 0.4];
+const FONT_SIZES = [
+  1.9, 1.6, 1.35, 1.15, 0.95, 0.82, 0.72, 0.64, 0.56, 0.5, 0.45, 0.4,
+];
 
 /**
  * 简易伪随机数生成器（确保构建结果确定性）
@@ -95,14 +97,20 @@ export function computeWordCloudLayout(manifest) {
   items.sort((a, b) => b._fontSize - a._fontSize);
 
   // 先放置中心标题 "文言诗词" 的占位
-  const centerTitle = '文言诗词';
+  const centerTitle = "文言诗词";
   const centerBBox = estimateBBox(centerTitle, 3.6, containerW, containerH, 0);
   const placed = [{ x: centerX, y: centerY, w: centerBBox.w, h: centerBBox.h }];
 
   const result = [];
 
   for (const item of items) {
-    const bbox = estimateBBox(item.title, item._fontSize, containerW, containerH, item._rotation);
+    const bbox = estimateBBox(
+      item.title,
+      item._fontSize,
+      containerW,
+      containerH,
+      item._rotation,
+    );
 
     let bestPos = null;
     // 阿基米德螺旋搜索
@@ -150,7 +158,7 @@ export function computeWordCloudLayout(manifest) {
     const topPct = ((bestPos.y / containerH) * 100).toFixed(1);
     const leftPct = ((bestPos.x / containerW) * 100).toFixed(1);
 
-    const tooltip = [item.dynasty, item.author].filter(Boolean).join(' ');
+    const tooltip = [item.dynasty, item.author].filter(Boolean).join(" ");
 
     result.push({
       title: item.title,
@@ -175,8 +183,8 @@ export function computeWordCloudLayout(manifest) {
  */
 export function renderHomepage(layoutItems, manifest) {
   // 按分类分组
-  const categories = ['wen', 'shi', 'ci'];
-  const tabNames = { wen: '文', shi: '诗', ci: '词' };
+  const categories = ["wen", "shi", "ci"];
+  const tabNames = { wen: "文", shi: "诗", ci: "词" };
   const grouped = {};
   for (const cat of categories) {
     grouped[cat] = manifest.filter((item) => item.category === cat);
@@ -203,7 +211,7 @@ export function renderHomepage(layoutItems, manifest) {
     };
   });
 
-  const template = loadTemplate('homepage');
+  const template = loadTemplate("homepage");
   return template({
     cloudItems: layoutItems,
     tabNavItems,
