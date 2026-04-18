@@ -145,24 +145,24 @@ function renderInline(node) {
     case 'annotate':
       return `<span class="wyw-annotate" data-note="${escapeAttr(node.note)}">${escapeHtml(node.text)}</span>`;
 
-    case 'ruby_annotate':
-      return `<ruby><span class="wyw-annotate" data-note="${escapeAttr(node.note)}">${escapeHtml(node.base)}</span><rp>(</rp><rt>${escapeHtml(node.annotation)}</rt><rp>)</rp></ruby>`;
-
-    case 'ruby_annotate_full': {
-      // 将 fullText 拆分为 base 和剩余部分
-      // 例如 fullText="箬笠", base="箬" -> suffix="笠"
-      const suffix = node.fullText.slice(node.base.length);
-      return `<ruby><span class="wyw-annotate" data-note="${escapeAttr(node.note)}"><ruby>${escapeHtml(node.base)}<rp>(</rp><rt>${escapeHtml(node.annotation)}</rt><rp>)</rp></ruby>${escapeHtml(suffix)}</span></ruby>`;
+    case 'ruby_annotate': {
+      const { items, note } = node;
+      if (items.length === 1 && items[0].annotation) {
+        // 单字注音+注释: <ruby><span>base</span><rp>(</rp><rt>annotation</rt><rp>)</rp></ruby>
+        return `<ruby><span class="wyw-annotate" data-note="${escapeAttr(note)}">${escapeHtml(items[0].base)}</span><rp>(</rp><rt>${escapeHtml(items[0].annotation)}</rt><rp>)</rp></ruby>`;
+      }
+      // 多字注音+注释: 内部每字各自渲染 ruby，外部用 annotate span 包裹
+      const innerHtml = items.map(item => {
+        if (item.annotation) {
+          return `<ruby>${escapeHtml(item.base)}<rp>(</rp><rt>${escapeHtml(item.annotation)}</rt><rp>)</rp></ruby>`;
+        }
+        return escapeHtml(item.base);
+      }).join('');
+      return `<ruby><span class="wyw-annotate" data-note="${escapeAttr(note)}">${innerHtml}</span></ruby>`;
     }
 
     case 'emphasis':
       return `<em>${renderInlineList(node.children)}</em>`;
-
-    case 'proper_noun':
-      return `<span class="wyw-proper">${renderInlineList(node.children)}</span>`;
-
-    case 'book_title':
-      return `<cite>${escapeHtml(node.title)}</cite>`;
 
     default:
       return '';

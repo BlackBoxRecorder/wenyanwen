@@ -71,27 +71,71 @@ describe('parseInline', () => {
     assert.equal(nodes[1].type, 'text');
   });
 
-  it('解析专名 _名词_', () => {
-    const nodes = parseInline('南阳_诸葛庐_');
+
+  it('解析注音+注释组合（单字） [{字|拼音}](释义)', () => {
+    const nodes = parseInline('春眠不觉[{晓|xiǎo}](天刚亮的时候)');
+    assert.equal(nodes.length, 2);
     assert.equal(nodes[0].type, 'text');
-    assert.equal(nodes[1].type, 'proper_noun');
-    assert.equal(nodes[1].children[0].value, '诸葛庐');
+    assert.equal(nodes[0].value, '春眠不觉');
+    assert.equal(nodes[1].type, 'ruby_annotate');
+    assert.equal(nodes[1].items.length, 1);
+    assert.equal(nodes[1].items[0].base, '晓');
+    assert.equal(nodes[1].items[0].annotation, 'xiǎo');
+    assert.equal(nodes[1].note, '天刚亮的时候');
   });
 
-  it('解析书名 《书名》', () => {
-    const nodes = parseInline('合于《桑林》之舞');
-    assert.equal(nodes[0].type, 'text');
-    assert.equal(nodes[1].type, 'book_title');
-    assert.equal(nodes[1].title, '桑林');
-    assert.equal(nodes[2].type, 'text');
+  it('解析注音+注释组合（多字） [{字|拼音}{字}...](释义)', () => {
+    const nodes = parseInline('[{穹|qióng}{庐}](游牧民族居住的圆顶毡帐)');
+    assert.equal(nodes.length, 1);
+    assert.equal(nodes[0].type, 'ruby_annotate');
+    assert.equal(nodes[0].items.length, 2);
+    assert.equal(nodes[0].items[0].base, '穹');
+    assert.equal(nodes[0].items[0].annotation, 'qióng');
+    assert.equal(nodes[0].items[1].base, '庐');
+    assert.equal(nodes[0].items[1].annotation, null);
+    assert.equal(nodes[0].note, '游牧民族居住的圆顶毡帐');
+  });
+
+  it('解析注音+注释组合（复杂多字）', () => {
+    const nodes = parseInline('[{邺|ye}{城}{戍|shù}](邺城服役)');
+    assert.equal(nodes.length, 1);
+    const ra = nodes[0];
+    assert.equal(ra.type, 'ruby_annotate');
+    assert.equal(ra.items.length, 3);
+    assert.equal(ra.items[0].base, '邺');
+    assert.equal(ra.items[0].annotation, 'ye');
+    assert.equal(ra.items[1].base, '城');
+    assert.equal(ra.items[1].annotation, null);
+    assert.equal(ra.items[2].base, '戍');
+    assert.equal(ra.items[2].annotation, 'shù');
+    assert.equal(ra.note, '邺城服役');
+  });
+
+  it('注音+注释组合与其他内联语法混合', () => {
+    const nodes = parseInline('{仙|xiān}[{晓|xiǎo}](天刚亮)*着重*');
+    assert.equal(nodes[0].type, 'ruby');
+    assert.equal(nodes[1].type, 'ruby_annotate');
+    assert.equal(nodes[2].type, 'emphasis');
+  });
+
+  it('相邻注音+注释组合与普通注释', () => {
+    const nodes = parseInline('[{字|pīn}](注一)[词](注二)');
+    assert.equal(nodes.length, 2);
+    assert.equal(nodes[0].type, 'ruby_annotate');
+    assert.equal(nodes[1].type, 'annotate');
+  });
+
+  it('普通注释不受注音+注释组合影响', () => {
+    const nodes = parseInline('[陋室](简陋的屋子)');
+    assert.equal(nodes[0].type, 'annotate');
+    assert.equal(nodes[0].text, '陋室');
   });
 
   it('混合解析多种内联语法', () => {
-    const nodes = parseInline('{仙|xiān}[斯](这)*着重*_专名_');
+    const nodes = parseInline('{仙|xiān}[斯](这)*着重*');
     assert.equal(nodes[0].type, 'ruby');
     assert.equal(nodes[1].type, 'annotate');
     assert.equal(nodes[2].type, 'emphasis');
-    assert.equal(nodes[3].type, 'proper_noun');
   });
 
   it('无标记的纯文本', () => {
@@ -201,7 +245,7 @@ title: 测试
 author: 作者
 ---
 
-{仙|xiān}则名，[斯](这)是陋室。
+有{仙|xiān}则名，[斯](这)是陋室。
 
 >> 有仙人则出名，这是简陋的房屋。`;
 

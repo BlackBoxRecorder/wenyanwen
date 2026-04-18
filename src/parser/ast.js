@@ -56,29 +56,10 @@ export function createEmphasis(children) {
   return { type: 'emphasis', children };
 }
 
-export function createProperNoun(children) {
-  return { type: 'proper_noun', children };
-}
-
-export function createBookTitle(title) {
-  return { type: 'book_title', title };
-}
-
-export function createRubyAnnotate(base, annotation, note) {
+export function createRubyAnnotate(items, note) {
   return {
     type: 'ruby_annotate',
-    base,
-    annotation,
-    note,
-  };
-}
-
-export function createRubyAnnotateFull(base, annotation, fullText, note) {
-  return {
-    type: 'ruby_annotate_full',
-    base,
-    annotation,
-    fullText,
+    items,  // Array<{ base: string, annotation: string | null }>
     note,
   };
 }
