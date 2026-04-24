@@ -63,6 +63,7 @@ function renderHeader(meta) {
 function renderToolbar() {
   return `<nav class="wyw-toolbar" role="toolbar">
   <button class="wyw-btn wyw-btn--translation" aria-pressed="true" title="显示/隐藏译文">译</button>
+  <button class="wyw-btn wyw-btn--fontsize" title="字体大小">字</button>
   <button class="wyw-btn wyw-btn--theme" title="切换深色模式">月</button>
 </nav>`;
 }

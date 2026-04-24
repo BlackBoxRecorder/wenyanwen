@@ -67,6 +67,21 @@
   }
 }
 
+/* === 字体大小档位 === */
+.wyw--font-md {
+  --wyw-font-size: 18px;
+  --wyw-font-size-large: 23px;
+  --wyw-font-size-small: 16px;
+  --wyw-font-size-xs: 11px;
+}
+
+.wyw--font-lg {
+  --wyw-font-size: 20px;
+  --wyw-font-size-large: 26px;
+  --wyw-font-size-small: 17px;
+  --wyw-font-size-xs: 12px;
+}
+
 /* === 全局 === */
 *,
 *::before,
@@ -432,6 +447,20 @@ blockquote p {
     padding: 2rem 1rem 3rem;
   }
 
+  .wyw.wyw--font-md {
+    --wyw-font-size: 17px;
+    --wyw-font-size-large: 22px;
+    --wyw-font-size-small: 15px;
+    --wyw-font-size-xs: 11px;
+  }
+
+  .wyw.wyw--font-lg {
+    --wyw-font-size: 19px;
+    --wyw-font-size-large: 24px;
+    --wyw-font-size-small: 16px;
+    --wyw-font-size-xs: 12px;
+  }
+
   .wyw-header h1 {
     font-size: 1.6em;
     letter-spacing: 0.1em;
@@ -453,6 +482,20 @@ blockquote p {
   .wyw {
     --wyw-font-size: 14px;
     padding: 1.5rem 0.8rem 3rem;
+  }
+
+  .wyw.wyw--font-md {
+    --wyw-font-size: 16px;
+    --wyw-font-size-large: 21px;
+    --wyw-font-size-small: 14px;
+    --wyw-font-size-xs: 10px;
+  }
+
+  .wyw.wyw--font-lg {
+    --wyw-font-size: 18px;
+    --wyw-font-size-large: 23px;
+    --wyw-font-size-small: 15px;
+    --wyw-font-size-xs: 11px;
   }
 
   .wyw-header h1 {
