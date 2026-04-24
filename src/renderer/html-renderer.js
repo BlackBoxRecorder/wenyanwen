@@ -1,6 +1,8 @@
 // HTML 渲染器
 // 遍历 AST 节点树，生成 HTML 字符串
 
+import { parseInline } from "../parser/inline-parser.js";
+
 /**
  * 将 Document AST 渲染为 HTML body 内容
  * @param {Object} doc - Document AST 节点
@@ -36,7 +38,7 @@ function renderHeader(meta) {
   const lines = ['<header class="wyw-header">'];
 
   if (meta.title) {
-    lines.push(`  <h1>${escapeHtml(meta.title)}</h1>`);
+    lines.push(`  <h1>${renderInlineList(parseInline(meta.title))}</h1>`);
   }
 
   if (meta.author || meta.dynasty) {
@@ -48,7 +50,7 @@ function renderHeader(meta) {
     }
     if (meta.author) {
       lines.push(
-        `    <span class="wyw-author">${escapeHtml(meta.author)}</span>`,
+        `    <span class="wyw-author">${renderInlineList(parseInline(meta.author))}</span>`,
       );
     }
     lines.push("  </p>");
@@ -120,7 +122,9 @@ function renderPoetryBlock(block) {
   }
 
   if (block.meta) {
-    lines.push(`  <p class="wyw-meta">${escapeHtml(block.meta)}</p>`);
+    lines.push(
+      `  <p class="wyw-meta">${renderInlineList(parseInline(block.meta))}</p>`,
+    );
   }
 
   lines.push('  <p class="wyw-verse">');

@@ -31,7 +31,7 @@ export function renderPage(options) {
   } = options;
 
   const title = meta.title
-    ? `${meta.title}${meta.author ? ` — ${meta.author}` : ""}`
+    ? `${stripWywMarkup(meta.title)}${meta.author ? ` — ${stripWywMarkup(meta.author)}` : ""}`
     : "文言文";
 
   const layoutClass = meta.layout || "ancient";
@@ -58,6 +58,17 @@ export function renderPage(options) {
     cssTag: new Handlebars.SafeString(cssTag),
     jsTag: new Handlebars.SafeString(jsTag),
   });
+}
+
+function stripWywMarkup(text) {
+  if (!text) return "";
+  // 先剥离注音标记 {字|拼音}
+  text = text.replace(/\{([^|{}]+)\|([^}]+)\}/g, "$1");
+  // 再剥离注释标记 [词](释义)
+  text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1");
+  // 最后剥离着重标记 *文本*
+  text = text.replace(/\*([^*]+)\*/g, "$1");
+  return text;
 }
 
 function escapeHtml(text) {
