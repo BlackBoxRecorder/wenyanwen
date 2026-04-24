@@ -123,7 +123,7 @@ body {
   height: 40px;
   border-radius: 50%;
   border: 1px solid var(--wyw-color-border);
-  background: var(--wyw-color-bg);
+  background: var(--wyw-color-bg-alt);
   cursor: pointer;
   display: flex;
   align-items: center;
