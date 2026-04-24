@@ -18,6 +18,10 @@
     <!-- 词云模式 -->
     <div class="wyw-cloud wyw-mode-content wyw-mode-content--active" data-mode="cloud" role="navigation" aria-label="作品列表">
       <h1 class="wyw-cloud-center">文言诗词</h1>
+      <div class="wyw-search">
+        <input type="text" class="wyw-search-input" placeholder="搜索标题、作者..." autocomplete="off">
+        <div class="wyw-search-results"></div>
+      </div>
 {{#each cloudItems}}
       <a class="wyw-cloud-item" href="{{href}}" style="top: {{top}}%; left: {{left}}%; font-size: {{fontSize}}em; color: {{color}}; transform: translate(-50%, -50%){{#if rotation}} rotate({{rotation}}deg){{/if}}"{{#if tooltip}} title="{{tooltip}}"{{/if}}>{{title}}</a>
 {{/each}}
@@ -26,6 +30,10 @@
     <!-- 标签页模式 -->
     <div class="wyw-tabs-container wyw-mode-content" data-mode="tab">
       <h1 class="wyw-tabs-title">文言诗词</h1>
+      <div class="wyw-search">
+        <input type="text" class="wyw-search-input" placeholder="搜索标题、作者..." autocomplete="off">
+        <div class="wyw-search-results"></div>
+      </div>
       <nav class="wyw-tabs" role="tablist">
 {{#each tabNavItems}}
         <button class="wyw-tab{{#if active}} wyw-tab--active{{/if}}" data-tab="{{tab}}">{{label}}</button>
@@ -49,6 +57,7 @@
     </footer>
   </main>
   <script>
+var WYW_SEARCH_ITEMS = {{{searchItems}}};
 (function() {
   var viewModes = document.querySelectorAll('.wyw-mode-btn');
   var modeContents = document.querySelectorAll('.wyw-mode-content');
@@ -86,6 +95,105 @@
       });
     });
   });
+
+  // === 搜索功能 ===
+  var searchContainers = document.querySelectorAll('.wyw-search');
+  searchContainers.forEach(function(container) {
+    var input = container.querySelector('.wyw-search-input');
+    var results = container.querySelector('.wyw-search-results');
+    var activeIndex = -1;
+
+    input.addEventListener('input', function() {
+      var query = input.value.trim().toLowerCase();
+      activeIndex = -1;
+      if (!query) {
+        results.innerHTML = '';
+        results.classList.remove('wyw-search-results--open');
+        return;
+      }
+
+      var matches = WYW_SEARCH_ITEMS.filter(function(item) {
+        return item.title.toLowerCase().indexOf(query) !== -1 ||
+               item.author.toLowerCase().indexOf(query) !== -1 ||
+               item.dynasty.toLowerCase().indexOf(query) !== -1;
+      }).slice(0, 15);
+
+      if (matches.length === 0) {
+        results.innerHTML = '<div class="wyw-search-empty">无匹配结果</div>';
+        results.classList.add('wyw-search-results--open');
+        return;
+      }
+
+      results.innerHTML = matches.map(function(item, i) {
+        var meta = [item.dynasty, item.author].filter(Boolean).join(' · ');
+        return '<a class="wyw-search-item" href="' + item.href + '" data-index="' + i + '">' +
+          '<span class="wyw-search-item-title">' + escapeHighlight(item.title, query) + '</span>' +
+          (meta ? '<span class="wyw-search-item-meta">' + meta + '</span>' : '') +
+        '</a>';
+      }).join('');
+      results.classList.add('wyw-search-results--open');
+    });
+
+    input.addEventListener('keydown', function(e) {
+      var items = results.querySelectorAll('.wyw-search-item');
+      if (!items.length) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        activeIndex = Math.min(activeIndex + 1, items.length - 1);
+        updateActiveItem(items);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        activeIndex = Math.max(activeIndex - 1, 0);
+        updateActiveItem(items);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (activeIndex >= 0 && activeIndex < items.length) {
+          items[activeIndex].click();
+        }
+      } else if (e.key === 'Escape') {
+        input.value = '';
+        results.innerHTML = '';
+        results.classList.remove('wyw-search-results--open');
+        input.blur();
+      }
+    });
+
+    input.addEventListener('focus', function() {
+      if (input.value.trim()) {
+        input.dispatchEvent(new Event('input'));
+      }
+    });
+
+    // 点击外部关闭
+    document.addEventListener('click', function(e) {
+      if (!container.contains(e.target)) {
+        results.classList.remove('wyw-search-results--open');
+      }
+    });
+
+    function updateActiveItem(items) {
+      items.forEach(function(item, i) {
+        item.classList.toggle('wyw-search-item--active', i === activeIndex);
+      });
+      if (activeIndex >= 0 && items[activeIndex]) {
+        items[activeIndex].scrollIntoView({ block: 'nearest' });
+      }
+    }
+  });
+
+  function escapeHighlight(text, query) {
+    var lower = text.toLowerCase();
+    var idx = lower.indexOf(query);
+    if (idx === -1) return escapeHtml(text);
+    return escapeHtml(text.substring(0, idx)) +
+      '<mark>' + escapeHtml(text.substring(idx, idx + query.length)) + '</mark>' +
+      escapeHtml(text.substring(idx + query.length));
+  }
+
+  function escapeHtml(text) {
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
 })();
   </script>
 </body>

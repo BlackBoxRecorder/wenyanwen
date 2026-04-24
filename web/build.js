@@ -64,13 +64,66 @@ function buildManifest(files) {
 }
 
 /**
- * 在编译后的 HTML 中注入返回首页的导航链接
+ * 在编译后的 HTML 中注入导航（返回首页 + 上/下篇）
+ * @param {string} html - 编译后的 HTML
+ * @param {Object|null} prev - 上一篇 { title, href } 或 null
+ * @param {Object|null} next - 下一篇 { title, href } 或 null
  */
-function injectBackLink(html) {
+function injectNavigation(html, prev, next) {
+  // 顶部导航：返回首页
   const navHtml =
     '\n    <nav class="wyw-nav"><a href="../index.html" class="wyw-back">\u2190 首页</a></nav>';
-  // 在 <article ...> 标签后面插入
-  return html.replace(/(<article[^>]*>)/, `$1${navHtml}`);
+  let result = html.replace(/(<article[^>]*>)/, `$1${navHtml}`);
+
+  // 底部导航：上一篇 / 下一篇
+  if (prev || next) {
+    const prevNextHtml = buildPrevNextHtml(prev, next);
+    // 在 </article> 之前插入
+    result = result.replace(/(<\/article>)/, `${prevNextHtml}\n$1`);
+  }
+
+  return result;
+}
+
+/**
+ * 构建上/下篇导航 HTML
+ */
+function buildPrevNextHtml(prev, next) {
+  const parts = ['\n    <nav class="wyw-prev-next">'];
+
+  if (prev) {
+    parts.push(
+      `      <a class="wyw-prev" href="${escapeAttr(prev.href)}"><span class="wyw-prev-next-label">\u2190 上一篇</span><span class="wyw-prev-next-title">${escapeHtml(prev.title)}</span></a>`,
+    );
+  } else {
+    parts.push('      <span class="wyw-prev wyw-prev-next--disabled"></span>');
+  }
+
+  if (next) {
+    parts.push(
+      `      <a class="wyw-next" href="${escapeAttr(next.href)}"><span class="wyw-prev-next-label">下一篇 \u2192</span><span class="wyw-prev-next-title">${escapeHtml(next.title)}</span></a>`,
+    );
+  } else {
+    parts.push('      <span class="wyw-next wyw-prev-next--disabled"></span>');
+  }
+
+  parts.push("    </nav>");
+  return parts.join("\n");
+}
+
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function escapeAttr(text) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 /**
@@ -103,10 +156,21 @@ function build() {
 
   // 4. 生成详情页
   let pageCount = 0;
-  for (const item of manifest) {
+  for (let i = 0; i < manifest.length; i++) {
+    const item = manifest[i];
     const source = readFileSync(item.filePath, "utf-8");
     let html = compile(source, { assetsPath: "../" });
-    html = injectBackLink(html);
+
+    const prevItem =
+      i > 0
+        ? { title: manifest[i - 1].title, href: `../${manifest[i - 1].href}` }
+        : null;
+    const nextItem =
+      i < manifest.length - 1
+        ? { title: manifest[i + 1].title, href: `../${manifest[i + 1].href}` }
+        : null;
+    html = injectNavigation(html, prevItem, nextItem);
+
     const outPath = join(DIST, item.category, `${item.slug}.html`);
     writeFileSync(outPath, html, "utf-8");
     console.log(`  ${item.category}/${item.slug}.html  (${item.title})`);

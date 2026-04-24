@@ -211,10 +211,19 @@ export function renderHomepage(layoutItems, manifest) {
     };
   });
 
+  // 搜索数据（精简的 manifest，供前端搜索使用）
+  const searchItems = manifest.map((item) => ({
+    title: item.title,
+    href: item.href,
+    author: item.author || "",
+    dynasty: item.dynasty || "",
+  }));
+
   const template = loadTemplate("homepage");
   return template({
     cloudItems: layoutItems,
     tabNavItems,
     tabContents,
+    searchItems: JSON.stringify(searchItems),
   });
 }
