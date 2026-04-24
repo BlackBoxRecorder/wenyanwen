@@ -119,7 +119,12 @@ function parseBlocks(lines) {
    * 围栏块用于诗词等特殊格式，每行独立解析保留换行结构
    */
   function flushFenced() {
-    const poetryLines = buffer.map((line) => parseInline(line));
+    const poetryLines = buffer.map((line) => {
+      if (line && line.type === "heading") {
+        return line;
+      }
+      return parseInline(line);
+    });
     blocks.push(createPoetryBlock(fencedTitle, fencedMeta, poetryLines));
     buffer = [];
     fencedType = "";
@@ -251,10 +256,20 @@ function parseBlocks(lines) {
           continue;
         }
 
-        // 围栏内的标题：# text（必须在围栏开始后的第一行，且只能有一个）
+        // 围栏内的标题：# text
         const fencedHeadingMatch = trimmed.match(/^(#{1,3})\s+(.+)$/);
-        if (fencedHeadingMatch && buffer.length === 0 && !fencedTitle) {
-          fencedTitle = parseInline(fencedHeadingMatch[2]);
+        if (fencedHeadingMatch) {
+          if (buffer.length === 0 && !fencedTitle) {
+            // 主标题（围栏开始后的第一个标题）
+            fencedTitle = parseInline(fencedHeadingMatch[2]);
+          } else {
+            // 子标题（如 ## 其一、### 小标题）
+            buffer.push({
+              type: "heading",
+              level: fencedHeadingMatch[1].length,
+              content: parseInline(fencedHeadingMatch[2]),
+            });
+          }
           continue;
         }
 

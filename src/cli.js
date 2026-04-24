@@ -110,7 +110,10 @@ function buildFiles(files, options) {
       }
 
       // 复制 favicon
-      copyFileSync(join(ASSETS_DIR, "favicon.png"), join(outputDir, "favicon.png"));
+      copyFileSync(
+        join(ASSETS_DIR, "favicon.png"),
+        join(outputDir, "favicon.png"),
+      );
 
       // 统计信息
       const stats = collectStats(source);

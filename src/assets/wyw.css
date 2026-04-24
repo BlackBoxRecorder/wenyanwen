@@ -371,6 +371,21 @@ cite::after {
   border-top: 1px solid var(--wyw-color-border);
 }
 
+/* 二级、三级标题下方的诗句段不显示上边框分割线 */
+.wyw-poetry-section-title + .wyw-verse {
+  border-top: none;
+  padding-top: 0;
+}
+
+.wyw-poetry-section-title {
+  font-family: var(--wyw-font-kai);
+  font-size: 1.3em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  margin: calc(var(--wyw-grid-unit) * 1) 0 calc(var(--wyw-grid-unit) * 0.5);
+  color: var(--wyw-color-text);
+}
+
 /* === 引用 === */
 blockquote {
   margin: var(--wyw-grid-unit) 0;

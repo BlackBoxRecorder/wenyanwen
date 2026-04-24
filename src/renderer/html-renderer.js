@@ -128,16 +128,50 @@ function renderPoetryBlock(block) {
     );
   }
 
-  lines.push('  <p class="wyw-verse">');
-  for (let i = 0; i < block.lines.length; i++) {
-    const lineContent = renderInlineList(block.lines[i]);
-    if (lineContent) {
-      lines.push(
-        `    ${lineContent}${i < block.lines.length - 1 ? "<br>" : ""}`,
-      );
+  // 将 lines 按 heading 分段，每段 verse 单独用 <p> 包裹
+  const segments = [];
+  let currentSegment = [];
+
+  for (const line of block.lines) {
+    if (line && line.type === "heading") {
+      if (currentSegment.length > 0) {
+        segments.push({ type: "verse", lines: currentSegment });
+        currentSegment = [];
+      }
+      segments.push({
+        type: "heading",
+        level: line.level,
+        content: line.content,
+      });
+    } else {
+      currentSegment.push(line);
     }
   }
-  lines.push("  </p>");
+
+  if (currentSegment.length > 0) {
+    segments.push({ type: "verse", lines: currentSegment });
+  }
+
+  for (const segment of segments) {
+    if (segment.type === "heading") {
+      const tag = `h${segment.level + 1}`;
+      lines.push(
+        `  <${tag} class="wyw-poetry-section-title">${renderInlineList(segment.content)}</${tag}>`,
+      );
+    } else {
+      lines.push('  <p class="wyw-verse">');
+      for (let i = 0; i < segment.lines.length; i++) {
+        const lineContent = renderInlineList(segment.lines[i]);
+        if (lineContent) {
+          lines.push(
+            `    ${lineContent}${i < segment.lines.length - 1 ? "<br>" : ""}`,
+          );
+        }
+      }
+      lines.push("  </p>");
+    }
+  }
+
   lines.push("</div>");
   return lines.join("\n");
 }
