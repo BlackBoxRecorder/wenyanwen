@@ -183,6 +183,13 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1rem;
+  height: 85vh;
+  max-height: 900px;
+  flex-direction: column;
+}
+
+.wyw-tabs-container.wyw-mode-content--active {
+  display: flex;
 }
 
 .wyw-tabs-title {
@@ -244,6 +251,12 @@ body {
 
 .wyw-tab-content--active {
   display: block;
+}
+
+.wyw-tabs-body {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .wyw-tab-list {
@@ -402,6 +415,10 @@ body {
     width: 260px;
   }
 
+  .wyw-tabs-container {
+    height: 70vh;
+  }
+
   .wyw-tabs {
     gap: 0.5rem;
   }
@@ -421,6 +438,10 @@ body {
 }
 
 @media (max-width: 480px) {
+  .wyw-tabs-container {
+    height: 65vh;
+  }
+
   .wyw-tabs-title {
     font-size: 1.6em;
     letter-spacing: 0.15em;
