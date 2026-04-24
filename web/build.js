@@ -189,6 +189,7 @@ function build() {
   cpSync(join(__dirname, "home.css"), join(DIST, "home.css"));
   cpSync(join(ASSETS_DIR, "cloud.png"), join(DIST, "cloud.png"));
   cpSync(join(ASSETS_DIR, "list.png"), join(DIST, "list.png"));
+  cpSync(join(ASSETS_DIR, "favicon.png"), join(DIST, "favicon.png"));
 
   console.log(`\n构建完成: ${pageCount} 个详情页 + 1 个首页 → dist/`);
 }

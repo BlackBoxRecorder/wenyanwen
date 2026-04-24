@@ -109,6 +109,9 @@ function buildFiles(files, options) {
         copyFileSync(join(ASSETS_DIR, "wyw.js"), join(outputDir, "wyw.js"));
       }
 
+      // 复制 favicon
+      copyFileSync(join(ASSETS_DIR, "favicon.png"), join(outputDir, "favicon.png"));
+
       // 统计信息
       const stats = collectStats(source);
       console.log(
