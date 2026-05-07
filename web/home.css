@@ -1,4 +1,4 @@
-/* 首页样式 — 文言诗词词云 */
+/* 首页样式 — 文言诗词标签页 */
 
 * {
   margin: 0;
@@ -24,53 +24,7 @@ body {
   padding: 2rem 1.5rem;
 }
 
-/* 词云容器 */
-.wyw-cloud {
-  position: relative;
-  width: 95vw;
-  max-width: 1200px;
-  height: 85vh;
-  max-height: 900px;
-  margin: 0 auto;
-}
-
-/* 中心标题 */
-.wyw-cloud-center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-family: var(--wyw-font-song);
-  font-size: clamp(2.4em, 5vw, 3.6em);
-  font-weight: 700;
-  color: var(--wyw-color-accent);
-  letter-spacing: 0.3em;
-  white-space: nowrap;
-  z-index: 10;
-  pointer-events: none;
-  user-select: none;
-}
-
-/* 词云项目 */
-.wyw-cloud-item {
-  position: absolute;
-  font-family: var(--wyw-font-kai);
-  text-decoration: none;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: transform 0.25s ease, color 0.25s ease, text-shadow 0.25s ease;
-  transform-origin: center center;
-  z-index: 1;
-}
-
-.wyw-cloud-item:hover {
-  transform: scale(1.15);
-  color: var(--wyw-color-accent) !important;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  z-index: 20;
-}
-
-/* 页脚 */
+/* === 页脚 === */
 .wyw-home-footer {
   margin-top: 2rem;
   padding: 1.5rem 0;
@@ -81,102 +35,6 @@ body {
   letter-spacing: 0.2em;
 }
 
-/* 响应式 */
-@media (max-width: 768px) {
-  .wyw-cloud {
-    width: 95vw;
-    height: 70vh;
-  }
-
-  .wyw-cloud-center {
-    font-size: clamp(1.8em, 6vw, 2.6em);
-  }
-}
-
-@media (max-width: 480px) {
-  .wyw-home {
-    padding: 1rem;
-  }
-
-  .wyw-cloud {
-    height: 65vh;
-  }
-
-  .wyw-cloud-center {
-    font-size: 1.6em;
-    letter-spacing: 0.2em;
-  }
-}
-
-/* === 模式切换按钮 === */
-.wyw-mode-switch {
-  position: fixed;
-  top: 1.5rem;
-  right: 1.5rem;
-  display: flex;
-  gap: 0.5rem;
-  z-index: 1000;
-}
-
-.wyw-mode-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid var(--wyw-color-border);
-  background: var(--wyw-color-bg-alt);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.2s ease;
-  -webkit-user-select: none;
-  user-select: none;
-  padding: 0;
-}
-
-.wyw-mode-icon {
-  width: 22px;
-  height: 22px;
-  object-fit: contain;
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
-}
-
-.wyw-mode-btn:hover .wyw-mode-icon {
-  opacity: 0.9;
-}
-
-.wyw-mode-btn--active .wyw-mode-icon {
-  opacity: 1;
-  filter: brightness(0) invert(1);
-}
-
-.wyw-mode-btn:hover {
-  background: var(--wyw-color-bg-alt);
-  transform: scale(1.08);
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
-}
-
-.wyw-mode-btn:active {
-  transform: scale(0.96);
-}
-
-.wyw-mode-btn--active {
-  background: var(--wyw-color-accent);
-  color: white;
-  border-color: var(--wyw-color-accent);
-}
-
-/* === 模式内容容器 === */
-.wyw-mode-content {
-  display: none;
-}
-
-.wyw-mode-content--active {
-  display: block;
-}
-
 /* === 标签页容器 === */
 .wyw-tabs-container {
   width: 100%;
@@ -185,11 +43,8 @@ body {
   padding: 1rem;
   height: 85vh;
   max-height: 900px;
-  flex-direction: column;
-}
-
-.wyw-tabs-container.wyw-mode-content--active {
   display: flex;
+  flex-direction: column;
 }
 
 .wyw-tabs-title {
@@ -284,13 +139,11 @@ body {
 
 /* === 搜索框 === */
 .wyw-search {
-  position: absolute;
-  top: calc(50% + 3em);
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
   z-index: 50;
   width: 320px;
   max-width: 80%;
+  margin: 0 auto;
 }
 
 .wyw-search-input {
@@ -319,12 +172,8 @@ body {
   box-shadow: 0 0 0 2px rgba(180, 40, 40, 0.12);
 }
 
-/* 标签页模式下的搜索框（非绝对定位） */
+/* 标签页模式下的搜索框 */
 .wyw-tabs-container .wyw-search {
-  position: relative;
-  top: auto;
-  left: auto;
-  transform: none;
   margin: 0 auto 1.2rem;
   max-width: 400px;
 }
@@ -367,10 +216,6 @@ body {
   background: var(--wyw-color-bg-alt);
 }
 
-.wyw-search-item--active {
-  background: var(--wyw-color-bg-alt);
-}
-
 .wyw-search-item-title {
   white-space: nowrap;
   overflow: hidden;
@@ -398,23 +243,8 @@ body {
   font-size: 0.9em;
 }
 
-/* === 响应式调整 === */
+/* === 响应式 === */
 @media (max-width: 768px) {
-  .wyw-mode-switch {
-    top: 1rem;
-    right: 1rem;
-  }
-
-  .wyw-mode-btn {
-    width: 36px;
-    height: 36px;
-    font-size: 14px;
-  }
-
-  .wyw-search {
-    width: 260px;
-  }
-
   .wyw-tabs-container {
     height: 70vh;
   }
@@ -438,6 +268,10 @@ body {
 }
 
 @media (max-width: 480px) {
+  .wyw-home {
+    padding: 1rem;
+  }
+
   .wyw-tabs-container {
     height: 65vh;
   }

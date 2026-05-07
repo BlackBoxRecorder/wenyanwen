@@ -14,7 +14,7 @@ import {
 import { join, basename, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { compile, parse } from "../vendor/wyw/dist/index.js";
-import { computeWordCloudLayout, renderHomepage } from "./homepage.js";
+import { renderHomepage } from "./homepage.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -178,17 +178,14 @@ function build() {
   }
 
   // 5. 生成首页
-  const layoutItems = computeWordCloudLayout(manifest);
-  const homepageHtml = renderHomepage(layoutItems, manifest);
+  const homepageHtml = renderHomepage(manifest);
   writeFileSync(join(DIST, "index.html"), homepageHtml, "utf-8");
-  console.log(`  index.html  (首页词云, ${layoutItems.length} 个标题)`);
+  console.log(`  index.html  (首页, ${manifest.length} 篇)`);
 
   // 6. 复制资源文件
   cpSync(join(ASSETS_DIR, "wyw.css"), join(DIST, "wyw.css"));
   cpSync(join(ASSETS_DIR, "wyw.js"), join(DIST, "wyw.js"));
   cpSync(join(__dirname, "home.css"), join(DIST, "home.css"));
-  cpSync(join(ASSETS_DIR, "cloud.png"), join(DIST, "cloud.png"));
-  cpSync(join(ASSETS_DIR, "list.png"), join(DIST, "list.png"));
   cpSync(join(ASSETS_DIR, "favicon.png"), join(DIST, "favicon.png"));
 
   console.log(`\n构建完成: ${pageCount} 个详情页 + 1 个首页 → dist/`);
