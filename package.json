@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "description": "文言文标记语言编译器 - 将 .wyw 文件编译为排版精美的 HTML 页面",
   "type": "module",
-  "main": "./src/index.js",
+  "main": "./vendor/wyw/dist/index.js",
   "bin": {
-    "wyw": "./bin/wyw.js"
+    "wyw": "./vendor/wyw/bin/wyw.js"
   },
   "scripts": {
     "build:examples": "node bin/wyw.js build examples/*.wyw -o examples/dist",

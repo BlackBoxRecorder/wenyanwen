@@ -1,6 +1,6 @@
 // 首页生成模块 — 词云布局 + HTML 模板
 
-import { loadTemplate } from "../src/templates/index.js";
+import { loadTemplate } from "../vendor/wyw/dist/templates/index.js";
 
 /**
  * 传统中式配色方案

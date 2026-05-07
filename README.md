@@ -2,6 +2,14 @@
 
 将 `.wyw` 文件编译为排版精美的 HTML 页面，支持注音、注释、译文等文言文阅读辅助功能。
 
+> 本仓库通过 Git 子模块依赖 [BlackBoxRecorder/wyw](https://github.com/BlackBoxRecorder/wyw)（位于 `vendor/wyw/`）。
+> 克隆请使用 `git clone --recursive`，或克隆后执行：
+> ```bash
+> git submodule update --init --recursive
+> (cd vendor/wyw && npm install && npm run build)
+> ```
+> 否则 `npm run build:site` 会因找不到 `vendor/wyw/dist/index.js` 而失败。
+
 ## 功能特性
 
 - **注音标注**：使用 Ruby 标注为汉字添加拼音

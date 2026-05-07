@@ -13,14 +13,14 @@ import {
 } from "node:fs";
 import { join, basename, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { compile, parse } from "../src/index.js";
+import { compile, parse } from "../vendor/wyw/dist/index.js";
 import { computeWordCloudLayout, renderHomepage } from "./homepage.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const WYWDOCS = join(ROOT, "wywdocs");
 const DIST = join(ROOT, "dist");
-const ASSETS_DIR = join(ROOT, "src", "assets");
+const ASSETS_DIR = join(ROOT, "vendor", "wyw", "dist", "assets");
 const CATEGORIES = ["wen", "shi", "ci"];
 
 /**
