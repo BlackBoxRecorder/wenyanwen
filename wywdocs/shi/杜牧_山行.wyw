@@ -1,8 +1,7 @@
 ---
 title: 唐诗·山行
+author: 杜牧
 dynasty: 唐
-source: 全唐诗
-layout: ancient
 ---
 
 ::: poetry
@@ -11,6 +10,6 @@ layout: ancient
 
 远上[寒山](深秋时节带有寒意的山)石径{斜|xié}，
 白云生处有人家。
-停车[坐](因为)爱_枫林_晚，
+停车[坐](因为)爱枫林晚，
 霜叶红于二月花。
 :::

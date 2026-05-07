@@ -1,13 +1,12 @@
 ---
 title: 唐诗五言绝句
+author: 李白
 dynasty: 唐
-source: 《全唐诗》
-layout: ancient
 ---
 
 ::: poetry
 # 静夜思
-:: _李白_
+:: 李白
 
 [床](古代多指井栏或庭院坐榻，此处泛指居处)前明月光，
 疑是地上霜。
