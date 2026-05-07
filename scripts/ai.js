@@ -96,9 +96,9 @@ async function main() {
 
   //endpoint = "https://open.bigmodel.cn/api/paas/v4/";
   endpoint = "https://dashscope.aliyuncs.com/compatible-mode/v1";
-  model = "deepseek-v3.2";
-  //model = "qwen3.5-flash"
-  //model = "qwen3.6-plus"
+  model = "deepseek-v4-flash";
+  //model = "qwen3.5-flash";
+  //model = "MiMo-V2.5-Pro";
   //model = "qwen3.5-flash"
 
   console.log(
