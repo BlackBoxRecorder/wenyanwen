@@ -1,0 +1,3 @@
+[submodule "vendor/wyw"]
+	path = vendor/wyw
+	url = https://github.com/BlackBoxRecorder/wyw
