@@ -1,13 +1,12 @@
-import { buildPrompt, cleanContent } from "../../scripts/lib/ai_util.js";
-import { TYPE_NAMES } from "../../scripts/lib/ai_util.js";
+import { buildPrompt, cleanContent } from "./ai-util.js";
 
-const DEEPSEEK_ENDPOINT = "https://dashscope.aliyuncs.com/compatible-mode/v1";
+const DEEPSEEK_ENDPOINT = "https://api.deepseek.com";
 const DEEPSEEK_MODEL = "deepseek-v4-flash";
 const GLM_ENDPOINT = "https://open.bigmodel.cn/api/paas/v4";
 const GLM_MODEL = "glm-4.7-flash";
 
 /**
- * 调用 DeepSeek API（通过阿里云 DashScope）
+ * 调用 DeepSeek API
  * @param {string|null} title - 作品标题
  * @param {string|null} author - 作者
  * @param {string|null} type - 作品类型 (shi/ci/wen)
@@ -53,7 +52,7 @@ export async function callDeepSeek(
     model: DEEPSEEK_MODEL,
     messages: [{ role: "user", content: prompt }],
     temperature: 0.7,
-    extra_body: { enable_thinking: true },
+    extra_body: { enable_thinking: false },
   };
 
   const response = await fetch(url, {
@@ -140,8 +139,8 @@ export async function callGLMSearch(title, author) {
   const url = `${GLM_ENDPOINT}/chat/completions`;
 
   const query = author
-    ? `请搜索关于《${title}》（作者：${author}）的创作背景、原文内容、历代评注和翻译资料`
-    : `请搜索关于《${title}》的创作背景、原文内容、历代评注和翻译资料`;
+    ? `请搜索关于《${title}》（作者：${author}）的原文内容、翻译、注释、赏析资料`
+    : `请搜索关于《${title}》的原文内容、翻译、注释、赏析资料`;
 
   const body = {
     model: GLM_MODEL,

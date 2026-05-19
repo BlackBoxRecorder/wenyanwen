@@ -4,11 +4,7 @@
  */
 
 import { writeFile, mkdir, access } from "fs/promises";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { join } from "path";
 
 // 类型到目录的映射
 export const TYPE_TO_DIR = {
