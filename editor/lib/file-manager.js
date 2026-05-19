@@ -1,4 +1,9 @@
-import { readdir, readFile as fsReadFile, writeFile, unlink } from "fs/promises";
+import {
+  readdir,
+  readFile as fsReadFile,
+  writeFile,
+  unlink,
+} from "fs/promises";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { existsSync } from "fs";
@@ -26,7 +31,11 @@ function validateCategory(category) {
  */
 function validateFilename(filename) {
   const decoded = decodeURIComponent(filename);
-  if (decoded.includes("..") || decoded.includes("/") || decoded.includes("\\")) {
+  if (
+    decoded.includes("..") ||
+    decoded.includes("/") ||
+    decoded.includes("\\")
+  ) {
     throw new Error("无效的文件名");
   }
   if (!decoded.endsWith(".wyw")) {
@@ -147,12 +156,20 @@ export async function createFile(category, author, title, content) {
   const dirPath = join(WYWDOCS_PATH, category);
 
   // 生成文件名
-  const safeAuthor = author.replace(/[\\/:"*?<>|]/g, "").replace(/\s+/g, "-").substring(0, 20);
-  const safeTitle = title.replace(/[\\/:"*?<>|]/g, "").replace(/\s+/g, "-").substring(0, 30);
+  const safeAuthor = author
+    .replace(/[\\/:"*?<>|]/g, "")
+    .replace(/\s+/g, "-")
+    .substring(0, 20);
+  const safeTitle = title
+    .replace(/[\\/:"*?<>|]/g, "")
+    .replace(/\s+/g, "-")
+    .substring(0, 30);
   const filename = `${safeAuthor}_${safeTitle}.wyw`;
 
   // 如果未提供 content，使用默认模板
-  const defaultContent = content || `---
+  const defaultContent =
+    content ||
+    `---
 title: ${title}
 author: ${author}
 dynasty:
@@ -161,6 +178,12 @@ dynasty:
 `;
 
   const filePath = join(dirPath, filename);
+
+  // 检查文件是否已存在，防止覆盖
+  if (existsSync(filePath)) {
+    throw new Error(`文件已存在: ${category}/${filename}，请使用不同的标题`);
+  }
+
   await writeFile(filePath, defaultContent, "utf-8");
 
   const meta = extractFrontmatter(defaultContent);

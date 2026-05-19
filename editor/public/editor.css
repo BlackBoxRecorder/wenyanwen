@@ -270,6 +270,11 @@ body {
   transition: background-color 0.3s ease;
 }
 
+/* 隐藏预览中的工具栏按钮（译、字、月） */
+.preview-pane .wyw-toolbar {
+  display: none;
+}
+
 .preview-pane .wyw {
   max-width: none;
   margin: 0;
