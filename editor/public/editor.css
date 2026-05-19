@@ -618,7 +618,7 @@ body {
   border-left: 2px solid var(--wyw-color-border);
   text-indent: 0;
   letter-spacing: 0.02em;
-  max-height: 200px;
+  
   opacity: 1;
   overflow: hidden;
   transition: max-height 0.35s ease, opacity 0.35s ease, margin 0.35s ease, padding 0.35s ease;
