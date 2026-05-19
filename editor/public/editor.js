@@ -5,12 +5,12 @@ import { parse, renderBody } from "/vendor/assets/wyw-browser.js";
 //  状态管理
 // ============================================================
 const state = {
-  currentFile: null,    // { category, filename, title, author, dynasty }
+  currentFile: null, // { category, filename, title, author, dynasty }
   content: "",
   savedContent: "",
   isDirty: false,
   isDark: false,
-  fileCache: [],        // 文件列表缓存
+  fileCache: [], // 文件列表缓存
 };
 
 // ============================================================
@@ -19,32 +19,30 @@ const state = {
 let dom = {};
 
 function initDom() {
-  dom.textarea       = document.getElementById("editor");
-  dom.previewEl      = document.getElementById("preview");
-  dom.previewPane    = document.getElementById("preview-pane");
-  dom.fileList       = document.getElementById("file-list");
-  dom.currentFilename= document.getElementById("current-filename");
-  dom.statusbar      = document.getElementById("statusbar");
-  dom.statusFile     = document.getElementById("status-file");
-  dom.statusSave     = document.getElementById("status-save");
-  dom.statusChars    = document.getElementById("status-chars");
-  dom.statusLines    = document.getElementById("status-lines");
-  dom.toolbarStatus  = document.getElementById("toolbar-status");
+  dom.textarea = document.getElementById("editor");
+  dom.previewEl = document.getElementById("preview");
+  dom.previewPane = document.getElementById("preview-pane");
+  dom.fileList = document.getElementById("file-list");
+  dom.currentFilename = document.getElementById("current-filename");
+  dom.statusbar = document.getElementById("statusbar");
+  dom.statusFile = document.getElementById("status-file");
+  dom.statusSave = document.getElementById("status-save");
+  dom.statusChars = document.getElementById("status-chars");
+  dom.statusLines = document.getElementById("status-lines");
+  dom.toolbarStatus = document.getElementById("toolbar-status");
   // 按钮
-  dom.btnSave        = document.getElementById("btn-save");
-  dom.btnRuby        = document.getElementById("btn-ruby");
-  dom.btnAnnotate    = document.getElementById("btn-annotate");
-  dom.btnPreview     = document.getElementById("btn-preview");
-  dom.btnTheme       = document.getElementById("btn-theme");
-  dom.btnNewFile     = document.getElementById("btn-new-file");
-  dom.btnAiGenerate  = document.getElementById("btn-ai-generate");
-  dom.btnAiImprove   = document.getElementById("btn-ai-improve");
-  dom.btnAiAnnotate  = document.getElementById("btn-ai-annotate");
-  dom.btnAiSearch    = document.getElementById("btn-ai-search");
+  dom.btnSave = document.getElementById("btn-save");
+  dom.btnRuby = document.getElementById("btn-ruby");
+  dom.btnAnnotate = document.getElementById("btn-annotate");
+  dom.btnPreview = document.getElementById("btn-preview");
+  dom.btnTheme = document.getElementById("btn-theme");
+  dom.btnNewFile = document.getElementById("btn-new-file");
+  dom.btnAiGenerate = document.getElementById("btn-ai-generate");
+  dom.btnAiSearch = document.getElementById("btn-ai-search");
   // Modal 元素
-  dom.modalNewFile   = document.getElementById("modal-new-file");
-  dom.modalAnnotate  = document.getElementById("modal-annotate");
-  dom.searchPanel    = document.getElementById("search-panel");
+  dom.modalNewFile = document.getElementById("modal-new-file");
+  dom.modalAnnotate = document.getElementById("modal-annotate");
+  dom.searchPanel = document.getElementById("search-panel");
 }
 
 // ============================================================
@@ -122,7 +120,9 @@ function doPreview() {
     const doc = parse(source);
     const html = renderBody(doc);
     dom.previewEl.innerHTML = html;
-    setStatus(`${dom.textarea.value.length} 字符 · ${(dom.textarea.value.match(/\n/g) || []).length + 1} 行`);
+    setStatus(
+      `${dom.textarea.value.length} 字符 · ${(dom.textarea.value.match(/\n/g) || []).length + 1} 行`,
+    );
   } catch (e) {
     dom.previewEl.innerHTML = `<p style="color: var(--wyw-color-accent); padding: 2rem;">渲染错误：${e.message}</p>`;
     setStatus("渲染失败");
@@ -192,10 +192,8 @@ function renderFileTree(files) {
         state.currentFile.filename === f.filename
           ? " active"
           : "";
-      const label = f.title
-        ? `${f.title}`
-        : f.filename;
-      html += `<div class="file-item${activeClass}" data-category="${f.category}" data-filename="${encodeURIComponent(f.filename)}" title="${f.author ? f.author + ' · ' : ''}${f.title || f.filename}">`;
+      const label = f.title ? `${f.title}` : f.filename;
+      html += `<div class="file-item${activeClass}" data-category="${f.category}" data-filename="${encodeURIComponent(f.filename)}" title="${f.author ? f.author + " · " : ""}${f.title || f.filename}">`;
       html += `<span class="file-icon">📄</span>`;
       html += `<span>${label}</span>`;
       html += `</div>`;
@@ -235,7 +233,13 @@ async function loadFile(category, filename) {
   try {
     setStatus("加载中...");
     const data = await apiFetch(`/files/${category}/${filename}`);
-    state.currentFile = { category: data.category, filename: data.filename, title: data.title, author: data.author, dynasty: data.dynasty };
+    state.currentFile = {
+      category: data.category,
+      filename: data.filename,
+      title: data.title,
+      author: data.author,
+      dynasty: data.dynasty,
+    };
     dom.textarea.value = data.content;
     state.savedContent = data.content;
     state.isDirty = false;
@@ -263,10 +267,13 @@ async function saveCurrentFile() {
 
   try {
     setStatus("保存中...");
-    await apiFetch(`/files/${state.currentFile.category}/${encodeURIComponent(state.currentFile.filename)}`, {
-      method: "PUT",
-      body: JSON.stringify({ content: dom.textarea.value }),
-    });
+    await apiFetch(
+      `/files/${state.currentFile.category}/${encodeURIComponent(state.currentFile.filename)}`,
+      {
+        method: "PUT",
+        body: JSON.stringify({ content: dom.textarea.value }),
+      },
+    );
     markClean();
     setStatus("已保存");
     // 刷新文件列表以更新元数据
@@ -431,68 +438,6 @@ async function aiGenerate() {
   }
 }
 
-async function aiImprove() {
-  if (!dom.textarea.value.trim()) {
-    setStatus("编辑器内容为空，无法改进");
-    return;
-  }
-
-  const restore = showLoading(dom.btnAiImprove, "⏳ 改进中...");
-  try {
-    setStatus("AI 正在改进...");
-    const data = await apiFetch("/ai/improve", {
-      method: "POST",
-      body: JSON.stringify({ content: dom.textarea.value }),
-    });
-
-    if (!confirm("AI 已生成改进版本，是否替换当前编辑器内容？")) {
-      setStatus("已取消替换");
-      return;
-    }
-
-    dom.textarea.value = data.content;
-    updateAfterEdit();
-    doPreview();
-    setStatus("AI 改进完成");
-  } catch (e) {
-    setStatus(`AI 改进失败: ${e.message}`);
-  } finally {
-    restore();
-  }
-}
-
-async function aiAnnotate() {
-  const start = dom.textarea.selectionStart;
-  const end = dom.textarea.selectionEnd;
-  if (start === end) {
-    setStatus("请先选中需要标注的文字");
-    return;
-  }
-
-  const text = dom.textarea.value.slice(start, end);
-  // 获取一些上下文
-  const contextBefore = dom.textarea.value.substring(Math.max(0, start - 100), start);
-  const contextAfter = dom.textarea.value.substring(end, Math.min(dom.textarea.value.length, end + 100));
-  const context = contextBefore + contextAfter;
-
-  const restore = showLoading(dom.btnAiAnnotate, "⏳ 标注中...");
-  try {
-    setStatus("AI 正在标注...");
-    const data = await apiFetch("/ai/annotate", {
-      method: "POST",
-      body: JSON.stringify({ text, context }),
-    });
-
-    dom.textarea.setRangeText(data.content, start, end, "end");
-    updateAfterEdit();
-    setStatus("AI 标注完成");
-  } catch (e) {
-    setStatus(`AI 标注失败: ${e.message}`);
-  } finally {
-    restore();
-  }
-}
-
 async function aiSearch() {
   // 优先使用当前文件的标题和作者
   let title, author;
@@ -528,7 +473,8 @@ async function aiSearch() {
     }
 
     if (!Array.isArray(results) || results.length === 0) {
-      searchResultsEl.innerHTML = '<p class="search-loading">未找到相关资料</p>';
+      searchResultsEl.innerHTML =
+        '<p class="search-loading">未找到相关资料</p>';
       return;
     }
 
@@ -590,38 +536,48 @@ function bindEvents() {
   });
 
   // 新建文件弹窗
-  document.getElementById("btn-confirm-new").addEventListener("click", async () => {
-    const category = document.getElementById("new-category").value;
-    const author = document.getElementById("new-author").value.trim();
-    const title = document.getElementById("new-title").value.trim();
-    if (!author) { setStatus("请输入作者"); return; }
-    if (!title) { setStatus("请输入标题"); return; }
-    dom.modalNewFile.classList.add("hidden");
-    await createNewFile(category, author, title);
-  });
+  document
+    .getElementById("btn-confirm-new")
+    .addEventListener("click", async () => {
+      const category = document.getElementById("new-category").value;
+      const author = document.getElementById("new-author").value.trim();
+      const title = document.getElementById("new-title").value.trim();
+      if (!author) {
+        setStatus("请输入作者");
+        return;
+      }
+      if (!title) {
+        setStatus("请输入标题");
+        return;
+      }
+      dom.modalNewFile.classList.add("hidden");
+      await createNewFile(category, author, title);
+    });
   document.getElementById("btn-cancel-new").addEventListener("click", () => {
     dom.modalNewFile.classList.add("hidden");
   });
 
   // 注释弹窗
-  document.getElementById("btn-confirm-annotate").addEventListener("click", () => {
-    const noteText = document.getElementById("annotate-input").value.trim();
-    dom.modalAnnotate.classList.add("hidden");
-    if (!noteText) {
+  document
+    .getElementById("btn-confirm-annotate")
+    .addEventListener("click", () => {
+      const noteText = document.getElementById("annotate-input").value.trim();
+      dom.modalAnnotate.classList.add("hidden");
+      if (!noteText) {
+        setStatus("已取消注释");
+        return;
+      }
+      insertAnnotation(noteText);
+    });
+  document
+    .getElementById("btn-cancel-annotate")
+    .addEventListener("click", () => {
+      dom.modalAnnotate.classList.add("hidden");
       setStatus("已取消注释");
-      return;
-    }
-    insertAnnotation(noteText);
-  });
-  document.getElementById("btn-cancel-annotate").addEventListener("click", () => {
-    dom.modalAnnotate.classList.add("hidden");
-    setStatus("已取消注释");
-  });
+    });
 
   // AI 按钮
   dom.btnAiGenerate.addEventListener("click", aiGenerate);
-  dom.btnAiImprove.addEventListener("click", aiImprove);
-  dom.btnAiAnnotate.addEventListener("click", aiAnnotate);
   dom.btnAiSearch.addEventListener("click", aiSearch);
 
   // 搜索面板关闭
