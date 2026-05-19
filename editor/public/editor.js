@@ -438,42 +438,41 @@ function insertVerify() {
 // ============================================================
 
 async function aiGenerate() {
-  // 收集信息
-  const author = prompt("请输入作者姓名：");
-  if (!author) return;
-  const title = prompt("请输入作品标题：");
-  if (!title) return;
-  const type = prompt("请输入作品类型 (wen/shi/ci)：", "shi");
-  if (!type || !["wen", "shi", "ci"].includes(type)) {
-    setStatus("类型无效，必须是 wen、shi 或 ci");
+  // 必须有打开的文件
+  if (!state.currentFile) {
+    setStatus("请先打开一个 .wyw 文件，再使用「生成全文」重新生成内容");
+    return;
+  }
+
+  const { title, author, category } = state.currentFile;
+  const type = category; // 'wen'、'shi' 或 'ci'
+
+  // 确认覆盖
+  if (
+    !confirm(
+      `将使用 AI 重新生成"《${title}》"（作者：${author}），当前内容将被覆盖，是否继续？`,
+    )
+  ) {
+    setStatus("已取消生成");
     return;
   }
 
   const restore = showLoading(dom.btnAiGenerate, "⏳ 生成中...");
   try {
-    setStatus("AI 正在生成...");
+    setStatus(`AI 正在重新生成"《${title}》"...`);
     const data = await apiFetch("/ai/generate", {
       method: "POST",
       body: JSON.stringify({ title, author, type }),
     });
 
-    // 检查是否要覆盖当前内容
-    if (state.currentFile) {
-      if (!confirm("AI 已生成内容，是否替换当前编辑器内容？")) {
-        setStatus("已取消替换");
-        return;
-      }
-    }
-
+    // 完全替换编辑器内容
     dom.textarea.value = data.content;
     updateAfterEdit();
-    state.currentFile = null; // 重置文件状态
-    dom.currentFilename.textContent = `[AI生成] ${author}_${title}.wyw`;
     doPreview();
     updateStatusBar();
-    setStatus(`AI 生成完成: ${title}`);
+    setStatus(`已重新生成: ${title}`);
   } catch (e) {
-    setStatus(`AI 生成失败: ${e.message}`);
+    setStatus(`生成失败: ${e.message}`);
   } finally {
     restore();
   }

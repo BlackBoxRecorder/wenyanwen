@@ -21,7 +21,7 @@ router.post("/generate", async (req, res) => {
         .json({ error: "AI 服务未配置，请设置 DEEPSEEK_API_KEY 环境变量" });
     }
 
-    const content = await callDeepSeek(title, author, type, "generate");
+    const content = await callDeepSeek(title, author, type);
     res.json({ content });
   } catch (err) {
     res.status(500).json({ error: err.message });
