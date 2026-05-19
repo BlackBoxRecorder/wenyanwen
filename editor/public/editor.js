@@ -11,6 +11,7 @@ const state = {
   isDirty: false,
   isDark: false,
   fileCache: [], // 文件列表缓存
+  collapsedCategories: new Set(), // 折叠状态的分类 key 集合
 };
 
 // ============================================================
@@ -173,12 +174,19 @@ function renderFileTree(files) {
     { key: "ci", name: "词", icon: "🌸" },
   ];
 
+  // 保存侧边栏滚动位置
+  const fileBrowser = document.getElementById("file-browser");
+  const scrollTop = fileBrowser ? fileBrowser.scrollTop : 0;
+
   let html = "";
   for (const cat of categories) {
     const catFiles = files.filter((f) => f.category === cat.key);
     if (catFiles.length === 0) continue;
 
-    html += `<div class="file-category">`;
+    const collapsedClass = state.collapsedCategories.has(cat.key)
+      ? " collapsed"
+      : "";
+    html += `<div class="file-category${collapsedClass}">`;
     html += `<div class="file-category-header" data-category="${cat.key}">`;
     html += `<span class="arrow">▾</span>`;
     html += `<span>${cat.icon} ${cat.name}</span>`;
@@ -209,10 +217,23 @@ function renderFileTree(files) {
 
   dom.fileList.innerHTML = html;
 
+  // 恢复侧边栏滚动位置
+  if (fileBrowser) {
+    fileBrowser.scrollTop = scrollTop;
+  }
+
   // 绑定分类折叠事件
   for (const header of dom.fileList.querySelectorAll(".file-category-header")) {
     header.addEventListener("click", () => {
-      header.parentElement.classList.toggle("collapsed");
+      const catKey = header.dataset.category;
+      const categoryEl = header.parentElement;
+      categoryEl.classList.toggle("collapsed");
+      // 同步折叠状态到 state
+      if (categoryEl.classList.contains("collapsed")) {
+        state.collapsedCategories.add(catKey);
+      } else {
+        state.collapsedCategories.delete(catKey);
+      }
     });
   }
 
