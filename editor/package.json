@@ -1,0 +1,14 @@
+{
+  "name": "wyw-editor",
+  "version": "1.0.0",
+  "description": "文言文编辑器 - Express.js 应用，支持 .wyw 文件编辑、AI 辅助和实时预览",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "cors": "^2.8.5"
+  }
+}

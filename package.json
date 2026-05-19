@@ -8,7 +8,9 @@
     "wyw": "./vendor/wyw/bin/wyw.js"
   },
   "scripts": {
-    "build": "node web/build.js"
+    "build": "node web/build.js",
+    "editor:setup": "cd vendor/wyw && npm run build:browser",
+    "editor:start": "node editor/server.js"
   },
   "keywords": [
     "文言文",

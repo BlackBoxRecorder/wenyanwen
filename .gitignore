@@ -12,6 +12,7 @@ examples/dist-inline/
 dist/
 *.html
 !examples/dist-inline/.gitkeep
+!editor/public/index.html
 
 # Environment variables
 .env
