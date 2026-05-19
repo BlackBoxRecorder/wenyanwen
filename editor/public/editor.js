@@ -34,6 +34,7 @@ function initDom() {
   dom.btnSave = document.getElementById("btn-save");
   dom.btnRuby = document.getElementById("btn-ruby");
   dom.btnAnnotate = document.getElementById("btn-annotate");
+  dom.btnVerify = document.getElementById("btn-verify");
   dom.btnPreview = document.getElementById("btn-preview");
   dom.btnTheme = document.getElementById("btn-theme");
   dom.btnNewFile = document.getElementById("btn-new-file");
@@ -193,9 +194,13 @@ function renderFileTree(files) {
           ? " active"
           : "";
       const label = f.title ? `${f.title}` : f.filename;
+      const verifyBadge = f.verified
+        ? `<span class="verify-badge" title="已校验">✅</span>`
+        : "";
       html += `<div class="file-item${activeClass}" data-category="${f.category}" data-filename="${encodeURIComponent(f.filename)}" title="${f.author ? f.author + " · " : ""}${f.title || f.filename}">`;
       html += `<span class="file-icon">📄</span>`;
-      html += `<span>${label}</span>`;
+      html += `<span class="file-item-name">${label}</span>`;
+      html += verifyBadge;
       html += `</div>`;
     }
 
@@ -392,6 +397,42 @@ function insertAnnotation(noteText) {
   updateAfterEdit();
 }
 
+// 校验标记（在当前文件末尾插入校验日期标记）
+function insertVerify() {
+  if (!state.currentFile) {
+    setStatus("请先打开一个文件");
+    return;
+  }
+
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
+  const day = now.getDate();
+  const mark = `--${year} 年 ${month} 月 ${day} 日--`;
+
+  // 检查是否已经包含校验标记
+  if (dom.textarea.value.includes(mark)) {
+    setStatus("文件已包含当前日期的校验标记");
+    return;
+  }
+
+  // 在文件末尾追加校验标记
+  let content = dom.textarea.value;
+  // 如果末尾没有换行，先添加换行
+  if (content.length > 0 && !content.endsWith("\n")) {
+    content += "\n";
+  }
+  content += mark + "\n";
+  dom.textarea.value = content;
+
+  // 将光标移到末尾
+  dom.textarea.setSelectionRange(content.length, content.length);
+  dom.textarea.focus();
+
+  updateAfterEdit();
+  setStatus(`已添加校验标记：${mark}`);
+}
+
 // ============================================================
 //  AI 功能
 // ============================================================
@@ -525,6 +566,7 @@ function bindEvents() {
   // 工具栏按钮
   dom.btnRuby.addEventListener("click", insertRuby);
   dom.btnAnnotate.addEventListener("click", () => openAnnotateModal());
+  dom.btnVerify.addEventListener("click", insertVerify);
   dom.btnPreview.addEventListener("click", doPreview);
   dom.btnTheme.addEventListener("click", toggleTheme);
   dom.btnSave.addEventListener("click", saveCurrentFile);

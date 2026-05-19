@@ -94,6 +94,7 @@ export async function listFiles(category = null) {
           author: meta.author,
           dynasty: meta.dynasty,
           size: Buffer.byteLength(content, "utf-8"),
+          verified: /--\d{4} 年 \d{1,2} 月 \d{1,2} 日--/.test(content),
         });
       } catch {
         // 跳过无法读取的文件
@@ -105,6 +106,7 @@ export async function listFiles(category = null) {
           author: "",
           dynasty: "",
           size: 0,
+          verified: false,
         });
       }
     }

@@ -94,6 +94,12 @@ body {
 }
 .editor-btn--search:hover { background: #6a4a3a; }
 
+.editor-btn--verify {
+  background: #3a5a2a;
+  border-color: #5a7a3a;
+}
+.editor-btn--verify:hover { background: #4a6a3a; }
+
 .editor-spacer {
   flex: 1;
 }
@@ -196,6 +202,19 @@ body {
   margin-right: 6px;
   opacity: 0.5;
   font-size: 12px;
+  flex-shrink: 0;
+}
+
+.file-item .file-item-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-item .verify-badge {
+  margin-left: 6px;
+  font-size: 11px;
+  opacity: 0.85;
+  flex-shrink: 0;
 }
 
 .file-new-btn {
