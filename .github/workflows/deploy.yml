@@ -40,25 +40,32 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      # 步骤 3：安装依赖
+      # 步骤 3：安装主项目依赖
       - name: Install dependencies
         run: npm ci
 
-      # 步骤 4：构建项目（生成 dist 目录）
+      # 步骤 4：安装并构建子模块 vendor/wyw
+      - name: Build submodule (vendor/wyw)
+        run: |
+          cd vendor/wyw
+          npm ci
+          npm run build
+
+      # 步骤 5：构建项目（生成 dist 目录）
       - name: Build
         run: npm run build
 
-      # 步骤 5：配置 GitHub Pages
+      # 步骤 6：配置 GitHub Pages
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      # 步骤 6：上传构建产物作为 Pages 部署源
+      # 步骤 7：上传构建产物作为 Pages 部署源
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: "./dist"
 
-      # 步骤 7：部署到 GitHub Pages
+      # 步骤 8：部署到 GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
