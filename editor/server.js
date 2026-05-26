@@ -12,7 +12,7 @@ const __dirname = dirname(__filename);
 const PROJECT_ROOT = join(__dirname, "..");
 
 const app = express();
-const PORT = process.env.EDITOR_PORT || 3000;
+const PORT = process.env.EDITOR_PORT || 3089;
 
 // Middleware
 app.use(cors());

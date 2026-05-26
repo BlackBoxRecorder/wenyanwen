@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "node web/build.js",
-    "editor:setup": "cd vendor/wyw && npm run build:browser",
+    "editor:setup": "cd vendor/wyw && npm install && npm run build:browser",
     "editor:start": "node editor/server.js"
   },
   "keywords": [
@@ -21,6 +21,8 @@
   "license": "MIT",
   "dependencies": {
     "commander": "^13.1.0",
-    "handlebars": "^4.7.9"
+    "handlebars": "^4.7.9",
+    "express": "^4.21.0",
+    "cors": "^2.8.5"
   }
 }
